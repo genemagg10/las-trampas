@@ -60,7 +60,7 @@ export const getViewer = cache(async (): Promise<Viewer> => {
 
   const { data: personRow } = await supabase
     .from("people")
-    .select("id, first_name, last_name, email, phone, birth_year, kind, household_id, households(id, name, membership_type, status, lap_only_invited)")
+    .select("id, first_name, last_name, email, phone, birth_year, kind, household_id, households!people_household_id_fkey(id, name, membership_type, status, lap_only_invited)")
     .eq("user_id", userId)
     .maybeSingle();
 

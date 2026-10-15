@@ -15,7 +15,7 @@ export default async function AdminMembers({
   if (!can(viewer, "membership") && !viewer.isAdmin) return <p className="alert error">Membership access is required.</p>;
   const supabase = await createClient();
   const term = (query.q || "").replace(/[%(),]/g, "").trim();
-  let people = supabase?.from("people").select("id, first_name, last_name, email, kind, household_id, households(name, status, membership_type)").order("last_name").limit(100);
+  let people = supabase?.from("people").select("id, first_name, last_name, email, kind, household_id, households!people_household_id_fkey(name, status, membership_type)").order("last_name").limit(100);
   if (people && term) people = people.or(`first_name.ilike.%${term}%,last_name.ilike.%${term}%,email.ilike.%${term}%`);
   const rows = people ? await people : { data: [] };
   const waitlist = supabase ? await supabase.from("waitlist_applications").select("id, household_name, contact_email, status, position").order("created_at", { ascending: false }).limit(50) : { data: [] };
