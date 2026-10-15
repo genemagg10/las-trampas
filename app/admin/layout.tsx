@@ -12,6 +12,9 @@ const links = [
   ["/admin/payments", "Payments"],
   ["/admin/announcements", "Updates"],
   ["/admin/photos", "Photos"],
+  ["/admin/lost-found", "Lost & found"],
+  ["/admin/snack-shack", "Snack shack"],
+  ["/admin/records", "Records"],
   ["/admin/import", "Import"],
 ];
 

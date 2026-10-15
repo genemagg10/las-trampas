@@ -123,6 +123,10 @@ export const publicNav = [
   ["/programs", "Programs"],
   ["/calendar", "Calendar"],
   ["/updates", "Updates"],
+  ["/pool-map", "Pool map"],
+  ["/snack-shack", "Snack Shack"],
+  ["/records", "Records"],
+  ["/lost-found", "Lost & Found"],
   ["/about", "About"],
   ["/contact", "Contact"],
 ] as const;

@@ -99,6 +99,33 @@ export default async function HomePage() {
       </section>
 
       <section className="band">
+        <div className="wrap">
+          <div className="section-head">
+            <p className="eyebrow">Around the pool</p>
+            <h2>Map, snacks, records, and lost things</h2>
+          </div>
+          <div className="grid-2">
+            <Link className="card feature-link" href="/pool-map">
+              <h3>Pool map</h3>
+              <p>A painted guide map of the deck, pools, lawn, and parking.</p>
+            </Link>
+            <Link className="card feature-link" href="/snack-shack">
+              <h3>Snack Shack</h3>
+              <p>Menu, prices, and hours, kept current by the board.</p>
+            </Link>
+            <Link className="card feature-link" href="/records">
+              <h3>Seahorses team records</h3>
+              <p>The fastest swims in team history, by age group and event.</p>
+            </Link>
+            <Link className="card feature-link" href="/lost-found">
+              <h3>Lost & Found</h3>
+              <p>Photos of what turned up on the deck. Members only.</p>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="band">
         <div className="wrap grid-2">
           <div>
             <div className="section-head">

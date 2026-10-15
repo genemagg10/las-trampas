@@ -253,3 +253,58 @@ th { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; colo
 .site-footer .legal { border-top: 1px solid rgba(255,255,255,0.15); margin-top: 2rem; padding-top: 1rem; font-size: 0.85rem; }
 .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
 @media (max-width: 760px) { .empty { grid-template-columns: 1fr; } .hero { min-height: 70vh; } }
+
+/* Theme-park guide map */
+.park-map { display: grid; grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr); gap: 1.2rem; align-items: start; }
+.park-frame { padding: 12px; border-radius: 22px; background: linear-gradient(135deg, #f6b93b, #e4572e 55%, #0e7cb8); box-shadow: 0 18px 40px rgba(11, 37, 69, 0.25); }
+.park-art { position: relative; aspect-ratio: 1600 / 1483; border-radius: 14px; overflow: hidden; border: 4px solid #fff7e6; }
+.park-art > img { object-fit: cover; }
+.park-cartouche { position: absolute; left: 3%; top: 3%; z-index: 3; background: #fff7e6; border: 4px solid #e4572e; outline: 3px dashed #0b2545; outline-offset: -10px; border-radius: 18px 4px 18px 4px; padding: 0.7rem 1.2rem 0.8rem; text-align: center; transform: rotate(-3deg); box-shadow: 0 8px 18px rgba(0,0,0,0.25); }
+.park-cartouche small { display: block; font-family: var(--font-display); color: #e4572e; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.park-cartouche strong { display: block; font-family: var(--font-display); font-size: clamp(1.1rem, 2.6vw, 2rem); color: #0b2545; line-height: 1.05; }
+.park-cartouche em { display: block; font-style: normal; font-size: 0.75rem; color: #0e7cb8; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.park-banner { position: absolute; z-index: 2; transform: translate(-50%, -50%) rotate(-4deg); background: #0e7cb8; color: white; font-family: var(--font-display); font-weight: 700; font-size: clamp(0.65rem, 1.4vw, 1rem); padding: 0.25rem 1.1rem; clip-path: polygon(0 0, 100% 0, 94% 50%, 100% 100%, 0 100%, 6% 50%); box-shadow: 0 4px 0 rgba(0,0,0,0.2); white-space: nowrap; pointer-events: none; }
+.park-banner.green { background: #3a9d5d; }
+.park-banner.sun { background: #e4572e; }
+.park-pin { position: absolute; z-index: 4; transform: translate(-50%, -50%); width: 2.3rem; height: 2.3rem; border-radius: 50%; border: 3px solid white; background: #e4572e; color: white; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.35); transition: transform 0.15s; }
+.park-pin:hover, .park-pin.on { transform: translate(-50%, -50%) scale(1.22); background: #0b2545; }
+.park-pin.tbc { background: #f6b93b; color: #0b2545; border-style: dashed; }
+.park-pin.tbc.on { background: #0b2545; color: white; }
+.park-pin i { position: absolute; top: -0.55rem; right: -0.55rem; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: white; color: #e4572e; font-style: normal; font-size: 0.75rem; line-height: 1.1rem; }
+.park-card { position: absolute; right: 3%; bottom: 3%; z-index: 5; max-width: min(320px, 60%); background: #fff7e6; border: 3px solid #0b2545; border-radius: 14px; padding: 0.7rem 0.9rem; box-shadow: 0 8px 18px rgba(0,0,0,0.25); }
+.park-card p { margin: 0.3rem 0 0; font-size: 0.9rem; }
+.tbc-tag { display: inline-block; margin-left: 0.4rem; background: #f6b93b; color: #0b2545; font-size: 0.7rem; font-weight: 800; padding: 0.1rem 0.45rem; border-radius: 999px; text-transform: uppercase; }
+.park-legend { background: #fff7e6; border: 3px solid #0b2545; border-radius: 18px; padding: 1rem; }
+.park-legend h3 { font-family: var(--font-display); margin: 0 0 0.5rem; color: #e4572e; }
+.park-legend ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+.park-legend button { all: unset; cursor: pointer; display: flex; gap: 0.5rem; align-items: center; padding: 0.25rem 0.3rem; border-radius: 8px; font-size: 0.92rem; }
+.park-legend button.on, .park-legend button:hover { background: #ffe1a8; }
+.park-legend em { color: #a35a00; font-size: 0.8rem; }
+.dot { flex: none; width: 1.6rem; height: 1.6rem; border-radius: 50%; display: grid; place-items: center; background: #e4572e; color: white; font-weight: 800; font-size: 0.8rem; }
+.dot.tbc { background: #f6b93b; color: #0b2545; }
+@media (max-width: 900px) { .park-map { grid-template-columns: 1fr; } .park-card { position: static; max-width: none; margin: 0.6rem; } }
+
+/* Records, snack, lost & found */
+.records-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.records-table th, .records-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid #e6e1d6; text-align: left; vertical-align: top; }
+.records-table thead th { background: var(--color-navy, #0B2545); color: white; position: sticky; top: 0; }
+.records-table td.time { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--color-pool, #0E7CB8); white-space: nowrap; }
+.records-table td small { color: #6b7480; }
+.table-scroll { overflow-x: auto; border-radius: 14px; background: white; box-shadow: 0 6px 18px rgba(11,37,69,0.07); }
+.tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0 0 1rem; }
+.tabs a { padding: 0.45rem 1rem; border-radius: 999px; border: 2px solid var(--color-pool, #0E7CB8); text-decoration: none; font-weight: 700; }
+.tabs a.on { background: var(--color-pool, #0E7CB8); color: white; }
+.menu-list { list-style: none; margin: 0; padding: 0; }
+.menu-list li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px dashed #d9d2c3; }
+.menu-list b { font-family: var(--font-display); }
+.menu-list .price { font-weight: 800; color: var(--color-pool, #0E7CB8); }
+.lf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.lf-card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 18px rgba(11,37,69,0.08); }
+.lf-card img, .lf-card .noimg { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #f1ece1; }
+.lf-card .noimg { display: grid; place-items: center; color: #6b7480; font-size: 0.85rem; }
+.lf-card div.body { padding: 0.7rem 0.9rem; }
+.lf-card.claimed { opacity: 0.55; }
+
+.feature-link { text-decoration: none; color: inherit; border-top: 5px solid var(--color-pool, #0E7CB8); transition: transform 0.15s; }
+.feature-link:hover { transform: translateY(-3px); }
+.feature-link h3 { color: var(--color-navy, #0B2545); margin-top: 0; }

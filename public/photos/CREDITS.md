@@ -11,3 +11,4 @@ All images come from Las Trampas Pool's own public website (lastrampaspool.com),
 | history-wading-pool.jpg | https://www.lastrampaspool.com/assets/07840/9cd2e673b29be397acb7e6f476aa86d2 | /lthistory |
 | seahorses-mural.jpg | https://www.lastrampaspool.com/assets/07840/ad00c17c53a7a9b071251385faff9e73 | /swimteam |
 | ../brand/lt-seahorse*.png, app/icon.png, app/apple-icon.png, app/favicon.ico | https://www.lastrampaspool.com/assets/07840/b64ce395e1c613950246db4eba4bb960 (LT seahorse mark, 439×569 PNG) | every page header |
+| pool-map-painted.jpg | USGS NAIP aerial (public domain, courtesy U.S. Geological Survey), The National Map ImageServer export around 37.87254, -122.09772 (640 St. Mary's Rd per US Census geocoder), painted with an OpenCV oil-paint/stylization filter | /pool-map |
