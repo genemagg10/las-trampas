@@ -4,7 +4,7 @@
 
 Las Trampas is a member-owned swim club in Burton Valley, Lafayette, CA, founded in 1958. It has 216 member households and is open May through October. It is home to the [Las Trampas Seahorses](https://ltst.org) swim team.
 
-> **Status: planning.** Nothing is built yet. This repo holds the vision, scope, architecture, design direction and the research behind them. The target is an MVP live before the **May 2027** opening.
+> **Status: the member platform is in this repo.** Next.js, Supabase, Stripe, and Resend. It runs with environment variables and shows a banner when a service is not connected yet. Follow [docs/SETUP.md](docs/SETUP.md) to create the club accounts, apply the database, and appoint the first admin. The target is an MVP live before the **May 2027** opening. Working fees and the lap rules are provisional until the board confirms them ([open questions](docs/OPEN_QUESTIONS.md)).
 
 ---
 
