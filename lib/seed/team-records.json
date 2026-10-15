@@ -1,0 +1,862 @@
+[
+ {
+  "gender": "Girls",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Freestyle",
+  "swimmer": "Kari Sivesind",
+  "time": "17.20",
+  "year": 1980,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Freestyle",
+  "swimmer": "Stella Canoles",
+  "time": "13.91",
+  "year": 2018,
+  "meet": "2018CountyMeet"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Stella Canoles",
+  "time": "28.15",
+  "year": 2019,
+  "meet": "CCCounty (08/03/2019)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Stella Canoles",
+  "time": "23.99",
+  "year": 2022,
+  "meet": "RHCC_AT_LTST_06082022 (25.37)&#10FHST_AT_LTST_06222022 (25.32)&#10BATTLE_OF_AGES_2022 (24.65)&#10DCSL_CHAMPIONSHIP_2022 (23.99)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Tara Griffin",
+  "time": "25.35",
+  "year": 1984,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Jillian Randolph",
+  "time": "25.91",
+  "year": 2026,
+  "meet": "HOX_LC_2026"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "100 Y",
+  "event": "Freestyle",
+  "swimmer": "Rachel Koenigsberg",
+  "time": "54.53",
+  "year": 2018,
+  "meet": "2018CountyMeet"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Breaststroke",
+  "swimmer": "Moira Heath",
+  "time": "22.92",
+  "year": 1997,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Breaststroke",
+  "swimmer": "Jillian Ochs",
+  "time": "18.04",
+  "year": 1995,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Jillian Ochs",
+  "time": "34.09",
+  "year": 1997,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Stella Canoles",
+  "time": "33.89",
+  "year": 2022,
+  "meet": "FHST_AT_LTST_06222022"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Morgan Coolbaugh",
+  "time": "32.46",
+  "year": 2017,
+  "meet": "CountyMeet2017"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Becky Straw",
+  "time": "1:10.13",
+  "year": 1998,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Backstroke",
+  "swimmer": "Kari Sivesind",
+  "time": "21.50",
+  "year": 1980,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Backstroke",
+  "swimmer": "Kari Sivesind",
+  "time": "17.53",
+  "year": 1982,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Lydia Osborn",
+  "time": "33.41",
+  "year": 2015,
+  "meet": "LTST@WCST (07/18/2015)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Stella Canoles",
+  "time": "28.59",
+  "year": 2022,
+  "meet": "SPW_AT_LTST_06042022 (29.85)&#10FHST_AT_LTST_06222022 (29.14)&#10DCSL_CHAMPIONSHIP_2022 (28.68)&#10CCCOUNTY_2022 (28.59)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Keelin Wakefield",
+  "time": "30.15",
+  "year": 2026,
+  "meet": "CCCOUNTY_2026"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Jennifer Ericson",
+  "time": "1:02.00",
+  "year": 1983,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Butterfly",
+  "swimmer": "Pierce Curtis",
+  "time": "18.04",
+  "year": 1993,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Butterfly",
+  "swimmer": "Georgianna Meyer",
+  "time": "15.05",
+  "year": 2025,
+  "meet": "DCSL_CHAMPIONSHIP_2025"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Alaina Lawrence",
+  "time": "30.06",
+  "year": 2021,
+  "meet": "CCCOUNTY_2021"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Stella Canoles",
+  "time": "26.77",
+  "year": 2022,
+  "meet": "LTST_TTRIALS_05152022 (28.10)&#10LTST_AT_WCSC_06012022 (27.49)&#10SPW_AT_LTST_06042022 (27.49)&#10RHCC_AT_LTST_06082022 (27.49)&#10BATTLE_OF_AGES_2022 (26.79)&#10HOX_LC_2022 (26.77)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Alaina Lawrence",
+  "time": "27.18",
+  "year": 2025,
+  "meet": "CCCOUNTY_2025 (27.28)&#10CCCOUNTY_2025 (27.18)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Becky Straw",
+  "time": "1:00.49",
+  "year": 1998,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "6&U",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Kari Sivesind",
+  "time": "1:47.10",
+  "year": 1980,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "7-8",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Stella Canoles",
+  "time": "1:19.00",
+  "year": 2018,
+  "meet": "2018CountyMeet"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "9-10",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Jillian Ochs",
+  "time": "1:11.24",
+  "year": 1997,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "11-12",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Stella Canoles",
+  "time": "1:02.27",
+  "year": 2022,
+  "meet": "LTST_TTRIALS_05152022 (1:07.33)&#10LTST_AT_SVST_05262022 (1:05.62)&#10SPW_AT_LTST_06042022 (1:05.42)&#10LTST_AT_WCST_06112022 (1:04.39)&#10PHA_AT_LTST_06152022 (1:03.22)&#10LTST_AT_SPBR_07132022 (1:02.64)&#10CCCOUNTY_2022 (1:02.27)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "13-14",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Tara Griffin",
+  "time": "1:04.24",
+  "year": 1984,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Jillian Randolph",
+  "time": "1:03.30",
+  "year": 2026,
+  "meet": "DCSL_CHAMPIONSHIP_2026"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "6&U",
+  "distance": "4\u00d725 Y",
+  "event": "Medley Relay",
+  "swimmer": "G.Meyer, C.Pegnim, J.Castelaz, J.Canoles",
+  "time": "1:30.33",
+  "year": 2023,
+  "meet": "WCSC_AT_LTST_07272023"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "7-8",
+  "distance": "4\u00d725 Y",
+  "event": "Medley Relay",
+  "swimmer": "J.Canoles, C.Pegnim, G.Meyer, M.Roberts",
+  "time": "1:06.53",
+  "year": 2025,
+  "meet": "LTST_AT_PHA_06182025 (1:10.80)&#10LTST_AT_SSC_07092025 (1:10.11)&#10CCCOUNTY_2025 (1:06.53)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "9-10",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "S.Meyer, K.Wakefield, C.Castelaz, D.Coombe",
+  "time": "2:03.54",
+  "year": 2023,
+  "meet": "WCSC_AT_LTST_07272023"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "11-12",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "S.Canoles, E.Stimmler, A.Lawrence, L.Brekke",
+  "time": "2:01.89",
+  "year": 2022,
+  "meet": "DCSL_CHAMPIONSHIP_2022 (2:03.68)&#10CCCOUNTY_2022 (2:01.89)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "13-14",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "C.Coffee, M.Coolbaugh, E.McGrath, K.Henderson",
+  "time": "1:57.31",
+  "year": 2017,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "E.Straw, B.Straw, L.Jenkins-Stark, E.Dodd",
+  "time": "1:56.76",
+  "year": 1999,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "6&U",
+  "distance": "4\u00d725 Y",
+  "event": "Free Relay",
+  "swimmer": "M.Ericson, A.Cassidy, E.Melkonian, R.Noone",
+  "time": "1:16.99",
+  "year": 2002,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "7-8",
+  "distance": "4\u00d725 Y",
+  "event": "Free Relay",
+  "swimmer": "G.Meyer, M.Roberts, C.Pegnim, J.Canoles",
+  "time": "1:00.44",
+  "year": 2025,
+  "meet": "CCCOUNTY_2025"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "9-10",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "S.Heath, L.Winters, M.Eames, J.Ochs",
+  "time": "1:56.71",
+  "year": 1997,
+  "meet": null
+ },
+ {
+  "gender": "Girls",
+  "age_group": "11-12",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "L.Brekke, A.Lawrence, E.Stimmler, S.Canoles",
+  "time": "1:48.82",
+  "year": 2022,
+  "meet": "DCSL_CHAMPIONSHIP_2022 (1:50.56)&#10CCCOUNTY_2022 (1:48.82)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "13-14",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "E.McGrath, C.Coffee, M.Coolbaugh, K.Henderson",
+  "time": "1:46.06",
+  "year": 2017,
+  "meet": "(1:46.08)&#10 (1:46.06) (08/11/2017)"
+ },
+ {
+  "gender": "Girls",
+  "age_group": "15-18",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "A.Brekke, A.Lawrence, L.Brekke, N.Lawrence",
+  "time": "1:44.28",
+  "year": 2026,
+  "meet": "DCSL_CHAMPIONSHIP_2026"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Freestyle",
+  "swimmer": "Brad Anderson",
+  "time": "16.67",
+  "year": 1989,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Freestyle",
+  "swimmer": "Forrest Canoles",
+  "time": "14.24",
+  "year": 2022,
+  "meet": "BATTLE_OF_AGES_2022 (14.55)&#10HOX_LC_2022 (14.54)&#10CCCOUNTY_2022 (14.34)&#10CCCOUNTY_2022 (14.24)"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Gunnar Grant",
+  "time": "28.30",
+  "year": 2021,
+  "meet": "CCCOUNTY_2021"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Gunnar Grant",
+  "time": "24.82",
+  "year": 2023,
+  "meet": "CCCOUNTY_2023"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Jerome Sivesind",
+  "time": "22.05",
+  "year": 1981,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Freestyle",
+  "swimmer": "Gunnar Grant",
+  "time": "21.95",
+  "year": 2026,
+  "meet": "LTST_AT_SPBR_06302026 (22.36)&#10CCCOUNTY_2026 (22.28)&#10CCCOUNTY_2026 (21.95)"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "100 Y",
+  "event": "Freestyle",
+  "swimmer": "Christian Gotterup",
+  "time": "48.87",
+  "year": 2024,
+  "meet": "CCC_AT_LTST_07242024 (49.38)&#10DCSL_CHAMPIONSHIP_2024 (48.87)"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Breaststroke",
+  "swimmer": "Drew Anderson",
+  "time": "22.02",
+  "year": 1992,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Breaststroke",
+  "swimmer": "Brad Anderson",
+  "time": "18.21",
+  "year": 1991,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Chris Chuck",
+  "time": "36.81",
+  "year": 2002,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Chris Chuck",
+  "time": "32.98",
+  "year": 2004,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Giorgio Alessandria",
+  "time": "29.55",
+  "year": 2015,
+  "meet": "LT@County (08/15/2015)"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Breaststroke",
+  "swimmer": "Christian Gotterup",
+  "time": "1:01.77",
+  "year": 2024,
+  "meet": "DCSL_CHAMPIONSHIP_2024"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Backstroke",
+  "swimmer": "Todd Ericson",
+  "time": "21.60",
+  "year": 1970,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Backstroke",
+  "swimmer": "Jason Coleman",
+  "time": "16.40",
+  "year": 1979,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Jason Coleman",
+  "time": "33.20",
+  "year": 1981,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Jason Coleman",
+  "time": "28.62",
+  "year": 1982,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Jerome Sivesind",
+  "time": "26.00",
+  "year": 1981,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Backstroke",
+  "swimmer": "Jackson Pahnke",
+  "time": "57.91",
+  "year": 2025,
+  "meet": "CCCOUNTY_2025"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "6&U",
+  "distance": "25 Y",
+  "event": "Butterfly",
+  "swimmer": "Max Flower",
+  "time": "18.88",
+  "year": 2004,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "7-8",
+  "distance": "25 Y",
+  "event": "Butterfly",
+  "swimmer": "Jason Coleman",
+  "time": "14.60",
+  "year": 1979,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "9-10",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Forrest Canoles",
+  "time": "31.04",
+  "year": 2024,
+  "meet": "CCCOUNTY_2024"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "11-12",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Gunnar Grant",
+  "time": "27.86",
+  "year": 2023,
+  "meet": "CCCOUNTY_2023"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "13-14",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Gunnar Grant",
+  "time": "24.78",
+  "year": 2025,
+  "meet": "DCSL_CHAMPIONSHIP_2025"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "50 Y",
+  "event": "Butterfly",
+  "swimmer": "Gunnar Grant",
+  "time": "55.02",
+  "year": 2026,
+  "meet": "CCCOUNTY_2026"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "6&U",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Forrest Canoles",
+  "time": "1:45.41",
+  "year": 2020,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "7-8",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Jason Coleman",
+  "time": "1:19.80",
+  "year": 1979,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "9-10",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Jason Coleman",
+  "time": "1:11.30",
+  "year": 1981,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "11-12",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Grant Sivesind",
+  "time": "1:05.16",
+  "year": 2008,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "13-14",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Luke VandenBerghe",
+  "time": "57.56",
+  "year": 2016,
+  "meet": "2016CountyMeet"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "100 Y",
+  "event": "Individual Medley",
+  "swimmer": "Travis Low",
+  "time": "56.63",
+  "year": 1999,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "6&U",
+  "distance": "4\u00d725 Y",
+  "event": "Medley Relay",
+  "swimmer": "G.Meyer, C.Pegnim, J.Castelaz, J.Canoles",
+  "time": "1:30.33",
+  "year": 2023,
+  "meet": "WCSC_AT_LTST_07272023"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "7-8",
+  "distance": "4\u00d725 Y",
+  "event": "Medley Relay",
+  "swimmer": "B.Anderson, J.Curtis, P.Dodd, M.Tammen",
+  "time": "1:11.35",
+  "year": 1991,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "9-10",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "N.Castelaz, F.Canoles, M.Pegnim, F.Seymour",
+  "time": "2:13.38",
+  "year": 2024,
+  "meet": "DCSL_CHAMPIONSHIP_2024 (2:18.10)&#10CCCOUNTY_2024 (2:13.38)"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "11-12",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "M.Johnson, A.Schneider, B.Zenoni, A.Eames",
+  "time": "2:01.85",
+  "year": 2001,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "13-14",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "M.Johnson, B.Zenoni, A.Eames, D.McBride",
+  "time": "1:48.98",
+  "year": 2003,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "4\u00d750 Y",
+  "event": "Medley Relay",
+  "swimmer": "B.Enright, T.Malone, T.Low, P.Dodd",
+  "time": "1:45.33",
+  "year": 1999,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "6&U",
+  "distance": "4\u00d725 Y",
+  "event": "Free Relay",
+  "swimmer": "M.Ericson, A.Cassidy, E.Melkonian, R.Noone",
+  "time": "1:16.99",
+  "year": 2002,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "7-8",
+  "distance": "4\u00d725 Y",
+  "event": "Free Relay",
+  "swimmer": "B.Zaich, N.Silva, M.Pegnim, F.Seymour",
+  "time": "1:01.47",
+  "year": 2023,
+  "meet": "CCCOUNTY_2023"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "9-10",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "F.Seymour, N.Castelaz, M.Pegnim, F.Canoles",
+  "time": "1:59.42",
+  "year": 2024,
+  "meet": "DCSL_CHAMPIONSHIP_2024 (2:02.90)&#10CCCOUNTY_2024 (1:59.42)"
+ },
+ {
+  "gender": "Boys",
+  "age_group": "11-12",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "B.Zenoni, A.Schneider, M.Johnson, A.Eames",
+  "time": "1:49.23",
+  "year": 2001,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "13-14",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "R.Noone, E.Brown, J.Hillman, G.Sivesind",
+  "time": "1:35.20",
+  "year": 2010,
+  "meet": null
+ },
+ {
+  "gender": "Boys",
+  "age_group": "15-18",
+  "distance": "4\u00d750 Y",
+  "event": "Free Relay",
+  "swimmer": "B.Enright, T.Malone, T.Low, P.Dodd",
+  "time": "1:31.79",
+  "year": 1999,
+  "meet": null
+ }
+]

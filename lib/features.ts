@@ -1,4 +1,4 @@
-import seedRecords from "@/lib/data/team-records.json";
+import seedRecords from "@/lib/seed/team-records.json";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
