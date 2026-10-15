@@ -1,0 +1,5 @@
+household_name,first_name,last_name,email,phone,kind,birth_year,membership_type,membership_status
+Rivera,Sam,Rivera,sam.rivera@example.com,925-555-0101,adult,1984,full,active
+Rivera,Alex,Rivera,alex.rivera@example.com,925-555-0102,child,2016,full,active
+Okafor,Ben,Okafor,ben.okafor@example.com,925-555-0103,adult,1979,full,active
+Nguyen,Cara,Nguyen,cara.nguyen@example.com,,adult,1991,lap_only,active
