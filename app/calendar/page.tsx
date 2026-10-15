@@ -56,7 +56,7 @@ export default async function CalendarPage({
         </h3>
         {view === "list" ? (
           <div className="card">
-            {events.length === 0 ? <p>No published events yet.</p> : null}
+            {events.length === 0 ? <p className="card">No published events in this range yet. Recreational swim times and club socials appear here as the board posts them.</p> : null}
             <ul>
               {events.map((event) => (
                 <li key={String(event.id)}>

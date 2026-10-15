@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Notice, PhotoSlot } from "@/components/ui";
+import { Notice, PhotoSlot, photos } from "@/components/ui";
 import { cancelShift, rsvpEvent, takeShift } from "@/lib/actions/member";
 import { readFlash } from "@/lib/flash";
 import { formatWhen, money } from "@/lib/format";
@@ -29,7 +29,7 @@ export default async function EventPage({
   return (
     <section className="band">
       <div className="wrap">
-        <PhotoSlot label={`Photo for ${event.title}`} />
+        <PhotoSlot label={`Photo for ${event.title}`} photo={photos.poolDeck} />
         <div className="section-head" style={{ marginTop: "1rem" }}>
           <p className="eyebrow">{String(event.kind)}</p>
           <h2>{String(event.title)}</h2>

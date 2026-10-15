@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Notice, PhotoSlot } from "@/components/ui";
+import { Notice, PhotoSlot, photos } from "@/components/ui";
 import { readFlash } from "@/lib/flash";
 import { money } from "@/lib/format";
 import { getPrices, getSeason } from "@/lib/queries";
@@ -27,7 +27,7 @@ export default async function MembershipPage({
                 : "Working 2027 figures. The live fee schedule replaces these once the database is connected."}
             </p>
           </div>
-          <PhotoSlot label="The lawn and the pool" />
+          <PhotoSlot label="The lawn and the pool" photo={photos.poolDeckCard} />
         </div>
         <Notice {...flash} />
         {!isStripeConfigured() ? (

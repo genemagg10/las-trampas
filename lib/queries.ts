@@ -91,3 +91,7 @@ export async function getBoardPositions() {
   const { data } = await supabase.from("board_positions").select("*").order("sort_order");
   return (data as Row[] | null) ?? [];
 }
+
+export function isUpcoming(startsAt: unknown) {
+  return new Date(String(startsAt)).getTime() >= Date.now();
+}

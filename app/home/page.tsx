@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Notice, PhotoSlot } from "@/components/ui";
+import { Badge, Notice, PhotoSlot, photos } from "@/components/ui";
 import { readFlash } from "@/lib/flash";
 import { money, formatWhen } from "@/lib/format";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -61,7 +61,7 @@ export default async function MemberHome({
         <Notice {...flash} />
         <div className="grid-3">
           <article className="card">
-            <PhotoSlot label="Your next lane" ratio="card" />
+            <PhotoSlot label="Your next lane" ratio="card" photo={photos.lapLanes} />
             <h3>Lap swim</h3>
             {viewer.isLap ? <Badge tone="lawn">Waiver on file</Badge> : <Badge tone="sun">Waiver needed</Badge>}
             <p>{(bookings?.data ?? []).length} upcoming booking{(bookings?.data ?? []).length === 1 ? "" : "s"}.</p>

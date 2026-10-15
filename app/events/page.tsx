@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PhotoSlot } from "@/components/ui";
+import { PhotoSlot, photos } from "@/components/ui";
 import { formatWhen, money } from "@/lib/format";
 import { getEvents } from "@/lib/queries";
 
@@ -17,7 +17,7 @@ export default async function EventsPage() {
         <div className="grid-2">
           {events.filter((event) => event.published !== false).map((event) => (
             <article key={String(event.id)} className="card">
-              <PhotoSlot label={`Photo for ${event.title}`} ratio="card" />
+              <PhotoSlot label={`Photo for ${event.title}`} ratio="card" photo={photos.poolDeckCard} />
               <h3>
                 <Link href={`/events/${event.id}`}>{String(event.title)}</Link>
               </h3>
@@ -29,7 +29,7 @@ export default async function EventsPage() {
             </article>
           ))}
         </div>
-        {events.length === 0 ? <p>No events are published yet.</p> : null}
+        {events.length === 0 ? <p className="card">No events are published yet. Pool-wide socials like the Opening Party, the June and July BBQs, and Las-Toberfest will appear here.</p> : null}
       </div>
     </section>
   );

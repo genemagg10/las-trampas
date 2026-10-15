@@ -15,7 +15,7 @@ export default async function UpdatesPage() {
           <p>Announcements and newsletters live here. Email is a notice that links back to the post.</p>
         </div>
         {posts.length === 0 ? (
-          <p className="card">Nothing is published yet. The communications chair posts the first update from the admin console.</p>
+          <p className="card">No updates are published yet. Board news, monthly updates, and season announcements will appear here.</p>
         ) : (
           <div className="grid-2">
             {posts.map((post) => (

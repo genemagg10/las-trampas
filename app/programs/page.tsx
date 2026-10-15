@@ -1,4 +1,4 @@
-import { PhotoSlot } from "@/components/ui";
+import { PhotoSlot, photos } from "@/components/ui";
 
 export const metadata = { title: "Programs" };
 
@@ -14,7 +14,7 @@ export default function ProgramsPage() {
           </div>
           <div className="grid-2">
             <article className="card">
-              <PhotoSlot label="Six lap lanes" ratio="card" />
+              <PhotoSlot label="Six lap lanes" ratio="card" photo={photos.lapLanes} />
               <h3>Lap swim</h3>
               <p>
                 Adult members sign the season waiver in the site. The draft text stays labeled until counsel and the insurer approve it. A signed
@@ -23,7 +23,7 @@ export default function ProgramsPage() {
               </p>
             </article>
             <article className="card">
-              <PhotoSlot label="Club social" ratio="card" />
+              <PhotoSlot label="Club social" ratio="card" photo={photos.historyCrowd} />
               <h3>Socials and volunteer shifts</h3>
               <p>
                 Each event has an RSVP, an optional ticket, and the shifts that earn back the volunteer deposit. The treasurer sees who has earned
@@ -31,7 +31,7 @@ export default function ProgramsPage() {
               </p>
             </article>
             <article className="card">
-              <PhotoSlot label="Seahorses practice, when a team photo is added" ratio="card" />
+              <PhotoSlot label="Seahorses" ratio="card" photo={photos.seahorses} />
               <h3>Las Trampas Seahorses</h3>
               <p>
                 The team site remains <a href="https://ltst.org">ltst.org</a> until the Seahorses board decides otherwise. Families the team
@@ -39,7 +39,7 @@ export default function ProgramsPage() {
               </p>
             </article>
             <article className="card">
-              <PhotoSlot label="A reserved party on the lawn" ratio="card" />
+              <PhotoSlot label="The pool deck" ratio="card" photo={photos.poolDeckCard} />
               <h3>Parties</h3>
               <p>Members request an open party time. Social approves it. The fee is collected here when Stripe is connected.</p>
             </article>

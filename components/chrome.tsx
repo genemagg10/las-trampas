@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MenuToggle } from "@/components/menu";
 import { Wordmark, memberNav, publicNav } from "@/components/ui";
@@ -45,28 +46,44 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="wrap grid-3">
-        <div>
-          <strong>Las Trampas Pool</strong>
-          <p>Member-owned swim club in Burton Valley, Lafayette, California. Open May through October.</p>
+        <div className="footer-brand">
+          <Image src="/brand/lt-seahorse-sm.png" alt="Las Trampas seahorse logo" width={46} height={60} />
+          <div>
+            <h4>Las Trampas Pool</h4>
+            <p>
+              Member-owned swim club in Burton Valley, Lafayette, California. Open to members and their guests May through October.
+            </p>
+          </div>
         </div>
         <div>
+          <h4>Visit & mail</h4>
           <p>
-            <Link href="/membership">Membership</Link>
+            640 St. Mary’s Road
             <br />
-            <Link href="/programs">Programs</Link>
+            Lafayette, CA 94549
             <br />
-            <Link href="/calendar">Calendar</Link>
+            <a href="https://maps.google.com/?q=640+St+Marys+Road+Lafayette+CA+94549">Map & directions</a>
+          </p>
+          <p>
+            Mail: PO Box 742, Lafayette, CA 94549
+          </p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>
+            <a href="tel:+19253104313">925-310-4313</a> (not monitored at all times)
+            <br />
+            Instagram: <a href="https://www.instagram.com/lastrampaspool/">@lastrampaspool</a>
+            <br />
+            Swim team: <a href="https://ltst.org">Las Trampas Seahorses</a>
             <br />
             <Link href="/contact">Contact the board</Link>
           </p>
         </div>
-        <div>
-          <p>
-            Swim team: <a href="https://ltst.org">Las Trampas Seahorses</a>
-            <br />
-            The official Seahorse mark is reserved until the swim team grants permission to use the file.
-          </p>
-        </div>
+      </div>
+      <div className="wrap legal">
+        <Link href="/membership">Membership</Link> · <Link href="/programs">Programs</Link> · <Link href="/calendar">Calendar</Link> ·{" "}
+        <Link href="/updates">Updates</Link> · <Link href="/about/history">History</Link> · © Las Trampas Pool, est. 1958
       </div>
     </footer>
   );

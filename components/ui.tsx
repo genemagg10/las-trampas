@@ -1,13 +1,49 @@
+import Image from "next/image";
 import Link from "next/link";
 import { serviceStatus } from "@/lib/env";
+
+export const photos = {
+  poolDeck: { src: "/photos/pool-deck.jpg", alt: "The Las Trampas lap pool on a sunny day, with lane lines, lounge chairs, umbrellas and the lifeguard chair" },
+  poolDeckCard: { src: "/photos/pool-deck-card.jpg", alt: "Lounge chairs and lane lines along the Las Trampas pool deck" },
+  lapLanes: { src: "/photos/lap-lanes.jpg", alt: "Six lap lanes with lane lines at Las Trampas Pool" },
+  history1958: { src: "/photos/history-1958-swimmers.jpg", alt: "Swimmers in the pool on opening day, August 17, 1958" },
+  historyCrowd: { src: "/photos/history-opening-day-crowd.jpg", alt: "The opening-day crowd on the pool deck in 1958" },
+  historyDeck: { src: "/photos/history-pool-deck.jpg", alt: "The new pool and bathhouse in the club's early years" },
+  historyWading: { src: "/photos/history-wading-pool.jpg", alt: "The wading pool and main pool in the club's early years" },
+  seahorses: { src: "/photos/seahorses-mural.jpg", alt: "Las Trampas Seahorses coaches in front of the Seahorses mural" },
+} as const;
+
+export function Photo({
+  src,
+  alt,
+  ratio = "video",
+  caption,
+  priority = false,
+}: {
+  src: string;
+  alt: string;
+  ratio?: "video" | "card" | "square" | "wide";
+  caption?: string;
+  priority?: boolean;
+}) {
+  return (
+    <figure className={`photo ratio-${ratio}`}>
+      <Image src={src} alt={alt} fill priority={priority} sizes="(max-width: 760px) 100vw, 50vw" />
+      {caption ? <figcaption>{caption}</figcaption> : null}
+    </figure>
+  );
+}
 
 export function PhotoSlot({
   label,
   ratio = "video",
+  photo,
 }: {
   label: string;
   ratio?: "video" | "card" | "square";
+  photo?: { src: string; alt: string };
 }) {
+  if (photo) return <Photo src={photo.src} alt={photo.alt} ratio={ratio} />;
   return (
     <div className={`photo-slot ratio-${ratio}`} role="img" aria-label={`${label}. Real Las Trampas photo not added yet.`}>
       <span>{label}</span>
@@ -73,7 +109,7 @@ export function ServiceBanner() {
 export function Wordmark() {
   return (
     <Link href="/" className="wordmark">
-      <span className="mark-slot" title="Official Seahorse mark slot">LT</span>
+      <Image className="mark" src="/brand/lt-seahorse-sm.png" alt="Las Trampas seahorse logo" width={34} height={44} priority />
       <span>
         <strong>Las Trampas</strong>
         <em>Pool</em>
