@@ -60,5 +60,30 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, sent });
+  // Morning list: tell each lap swimmer today who else is in their half hour (in-app; email is queued by the database).
+  let morning = 0;
+  const dayStart = new Date();
+  const dayEnd = new Date(dayStart.getTime() + 18 * 60 * 60 * 1000);
+  const today = await admin
+    .from("lap_bookings")
+    .select("person_id, slot_id, people!lap_bookings_person_id_fkey(first_name), lap_slots!inner(starts_at)")
+    .eq("status", "booked")
+    .gte("lap_slots.starts_at", dayStart.toISOString())
+    .lt("lap_slots.starts_at", dayEnd.toISOString());
+  const rows = (today.data ?? []) as unknown as { person_id: string; slot_id: string; people: { first_name: string } | null; lap_slots: { starts_at: string } }[];
+  for (const row of rows) {
+    const others = rows.filter((r) => r.slot_id === row.slot_id && r.person_id !== row.person_id).map((r) => r.people?.first_name || "A member");
+    const when = formatWhen(row.lap_slots.starts_at);
+    const insert = await admin.from("lap_notifications").insert({
+      person_id: row.person_id,
+      slot_id: row.slot_id,
+      kind: "morning_list",
+      title: `Today at ${when}: ${others.length ? others.join(", ") : "nobody else yet"}`,
+      body: others.length ? `You are swimming with ${others.join(", ")}.` : "You are alone so far. Look for a covered time on the lap swim page.",
+      urgent: others.length === 0,
+    });
+    if (!insert.error) morning += 1;
+  }
+
+  return NextResponse.json({ ok: true, sent, morning });
 }

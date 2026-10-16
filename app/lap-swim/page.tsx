@@ -1,135 +1,171 @@
 import Link from "next/link";
 import { Badge, Notice } from "@/components/ui";
-import { bookLane, cancelLane, inviteBuddy } from "@/lib/actions/member";
+import { bookLap } from "@/lib/actions/lap";
 import { readFlash } from "@/lib/flash";
-import { formatWhen } from "@/lib/format";
-import { createClient } from "@/lib/supabase/server";
+import { formatDay, formatTime } from "@/lib/format";
+import { coverPullers, isSocial, isUnlocked, laDate, nearestCovered } from "@/lib/lap/rules";
+import { loadBoard, type BoardSlot } from "@/lib/lap/server";
 import { getViewer } from "@/lib/viewer";
 
 export const metadata = { title: "Lap swim" };
+export const dynamic = "force-dynamic";
 
-type Slot = {
-  slot_id: string;
-  lane_number: number;
-  starts_at: string;
-  ends_at: string;
-  capacity: number;
-  booked_count: number;
-  blocked_reason: string | null;
-  mine: boolean;
-  buddy_count: number;
-  buddy_met: boolean;
-};
+function Who({ slot }: { slot: BoardSlot }) {
+  if (slot.others.length === 0) return <span className="muted">Nobody yet</span>;
+  return <span>{slot.others.join(", ")}</span>;
+}
 
 export default async function LapSwimPage({
   searchParams,
 }: {
-  searchParams: Promise<{ notice?: string; error?: string }>;
+  searchParams: Promise<{ notice?: string; error?: string; confirm?: string; minutes?: string; share?: string; day?: string }>;
 }) {
-  const flash = await readFlash(searchParams);
+  const params = await searchParams;
+  const flash = await readFlash(Promise.resolve(params));
   const viewer = await getViewer();
   if (!viewer.person) {
     return (
       <section className="band">
         <div className="wrap">
           <h1>Lap swim</h1>
-          <Link href="/login?next=/lap-swim">Sign in</Link>
+          <p>
+            <Link className="btn" href="/login?next=/lap-swim">Sign in</Link> to see lap times.
+          </p>
         </div>
       </section>
     );
   }
-  const supabase = await createClient();
-  const from = new Date();
-  const to = new Date(from.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const board = supabase ? await supabase.rpc("lap_slot_board", { p_from: from.toISOString(), p_to: to.toISOString() }) : { data: [], error: null };
-  const mine = supabase
-    ? await supabase.from("lap_bookings").select("id, slot_id, status").eq("person_id", viewer.person.id).eq("status", "booked")
-    : { data: [] };
-  const buddies = supabase ? await supabase.rpc("lap_slot_buddies", { p_slot_id: (mine.data?.[0]?.slot_id as string) || "00000000-0000-0000-0000-000000000000" }) : { data: [] };
-  const slots = (board.data ?? []) as Slot[];
-  const bookingBySlot = new Map((mine.data ?? []).map((row) => [String(row.slot_id), String(row.id)]));
+  if (!viewer.isMember) {
+    return (
+      <section className="band">
+        <div className="wrap">
+          <h1>Lap swim</h1>
+          <p>Lap swim is for members with a signed lap waiver.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const board = await loadBoard(viewer.person.id, 8);
+  const now = new Date();
+  const pullers = coverPullers(board);
+  const days = [...new Set(board.map((s) => s.day))];
+  const active = params.day && days.includes(params.day) ? params.day : days[0];
+  const daySlots = board.filter((s) => s.day === active);
+  const confirmSlot = params.confirm ? board.find((s) => s.id === params.confirm) : undefined;
+  const suggestions = confirmSlot ? nearestCovered(confirmSlot, board) : [];
+  const unlockedNow = board.some((s) => isUnlocked(now, s.starts_at));
 
   return (
     <section className="band">
       <div className="wrap">
         <div className="section-head">
           <p className="eyebrow">Lap swim</p>
-          <h2>Book a lane</h2>
+          <h2>Book a lap swim</h2>
           <p>
-            {viewer.isLap ? "Waiver signed for this season." : "Sign the season waiver before a lane can be booked."} The next seven days are shown.
-            A booking is confirmed when the buddy count meets the board’s rule.
+            Half-hour times, 6 swimmers each, one swimmer per lane (sharing is optional). Up to 3 days a week and 60 minutes a day.
+            {unlockedNow ? " It is Wednesday or later, so open times this week are unlocked for extra days." : " From Wednesday on, open times that week unlock for extra days."}
+            {" "}A buddy is anyone else in the same half hour.
           </p>
         </div>
         <Notice {...flash} />
-        {board.error ? <p className="alert error">{board.error.message}</p> : null}
-        <p>
-          <Link className="btn" href="/lap-swim/waiver">
-            {viewer.isLap ? "View waiver" : "Sign the waiver"}
-          </Link>
+        <p style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
+          <Link className="btn" href="/lap-swim/my">My swims</Link>
+          <Link className="btn secondary" href="/lap-swim/waiver">{viewer.isLap ? "View waiver" : "Sign the waiver"}</Link>
         </p>
-        <div className="lane-grid">
-          {slots.length === 0 ? <p className="card">No lane times in the next week. An admin generates them from the weekday template.</p> : null}
-          {slots.map((slot) => (
-            <article key={slot.slot_id} className="slot">
-              <div>
-                <strong>Lane {slot.lane_number}</strong>
-                <div>{formatWhen(slot.starts_at)}</div>
-                <div>
-                  {slot.blocked_reason ? (
-                    <Badge tone="muted">{slot.blocked_reason}</Badge>
-                  ) : (
-                    <Badge tone={slot.buddy_met ? "lawn" : "sun"}>
-                      {slot.booked_count}/{slot.capacity} · buddies {slot.buddy_count}
-                      {slot.buddy_met ? " · confirmed" : " · needs buddy"}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              {slot.mine ? (
-                <form action={cancelLane}>
-                  <input type="hidden" name="booking_id" value={bookingBySlot.get(slot.slot_id) || ""} />
-                  <button className="btn secondary" type="submit">
-                    Cancel
-                  </button>
+        {!viewer.isLap ? <p className="alert error">Sign the season lap waiver before booking.</p> : null}
+
+        {confirmSlot ? (
+          <div id="confirm" className="card alert" style={{ margin: "1rem 0" }}>
+            <h3>You would be swimming alone</h3>
+            <p>
+              Nobody else is booked at {formatDay(confirmSlot.starts_at)} {formatTime(confirmSlot.starts_at)} yet.
+              {suggestions.length > 0
+                ? ` ${suggestions.map((s) => `${s.others[0]} is at ${formatTime(s.starts_at)}`).join("; ")}.`
+                : " No one else is booked that day yet."}
+            </p>
+            <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
+              {suggestions.map((s) => (
+                <form key={s.id} action={bookLap}>
+                  <input type="hidden" name="slot_id" value={s.id} />
+                  <input type="hidden" name="minutes" value={params.minutes || "30"} />
+                  <input type="hidden" name="share_ok" value={params.share || "1"} />
+                  <button className="btn" type="submit">Book {formatTime(s.starts_at)} instead</button>
                 </form>
-              ) : (
-                <form action={bookLane}>
-                  <input type="hidden" name="slot_id" value={slot.slot_id} />
-                  <button className="btn" type="submit" disabled={Boolean(slot.blocked_reason)}>
-                    Book
-                  </button>
-                </form>
-              )}
-            </article>
-          ))}
-        </div>
-        <form className="form card" action={inviteBuddy} style={{ marginTop: "1rem" }}>
-          <h3>Invite a buddy</h3>
-          <p>Enter the other member’s person id from the directory, and the lane time id from your booking.</p>
-          <label>
-            Their person id
-            <input name="to_person_id" required />
-          </label>
-          <label>
-            Lane time
-            <select name="slot_id" required>
-              {(mine.data ?? []).map((row) => (
-                <option key={String(row.slot_id)} value={String(row.slot_id)}>
-                  {String(row.slot_id)}
-                </option>
               ))}
-            </select>
-          </label>
-          <button className="btn secondary" type="submit">
-            Send invite
-          </button>
-        </form>
-        {(buddies.data ?? []).length > 0 ? (
-          <p>
-            Visible buddies on your first booking:{" "}
-            {(buddies.data as { first_name: string; last_name: string }[]).map((person) => `${person.first_name} ${person.last_name}`).join(", ")}
-          </p>
+              <form action={bookLap}>
+                <input type="hidden" name="slot_id" value={confirmSlot.id} />
+                <input type="hidden" name="minutes" value={params.minutes || "30"} />
+                <input type="hidden" name="share_ok" value={params.share || "1"} />
+                <input type="hidden" name="confirm_alone" value="1" />
+                <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                  <input type="checkbox" name="alert_on_join" value="1" defaultChecked /> Tell me when someone joins
+                </label>
+                <button className="btn secondary" type="submit">Book anyway</button>
+              </form>
+              <Link className="btn secondary" href={`/lap-swim?day=${laDate(confirmSlot.starts_at)}`}>Back</Link>
+            </div>
+          </div>
         ) : null}
+
+        <nav className="nav" style={{ margin: "1rem 0", flexWrap: "wrap" }}>
+          {days.map((day) => (
+            <Link key={day} href={`/lap-swim?day=${day}`} aria-current={day === active ? "page" : undefined} style={day === active ? { fontWeight: 700, textDecoration: "underline" } : undefined}>
+              {formatDay(`${day}T12:00:00-07:00`)}
+            </Link>
+          ))}
+        </nav>
+
+        {board.length === 0 ? <p className="card">No lap times in the next week yet.</p> : null}
+        <div className="lane-grid">
+          {daySlots.map((slot) => {
+            const full = slot.booked >= slot.capacity;
+            const covered = slot.booked >= 2;
+            return (
+              <article key={slot.id} className="slot" style={pullers.has(slot.id) ? { borderLeft: "5px solid var(--sun, #f2b632)" } : undefined}>
+                <div>
+                  <strong>
+                    {formatTime(slot.starts_at)} to {formatTime(slot.ends_at)}
+                  </strong>
+                  <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", margin: "0.25rem 0" }}>
+                    {pullers.has(slot.id) ? <Badge tone="sun">Pulls the covers</Badge> : null}
+                    {isSocial(slot) ? <Badge tone="lawn">Sunday Social, shared lanes, coffee</Badge> : null}
+                    {slot.blocked ? <Badge tone="muted">Blocked</Badge> : <Badge tone={covered ? "lawn" : "sun"}>{slot.booked}/{slot.capacity} spots{covered ? ", buddy covered" : slot.booked === 1 ? ", needs a buddy" : ""}</Badge>}
+                  </div>
+                  <div style={{ fontSize: "0.9rem" }}>
+                    <Who slot={slot} />
+                  </div>
+                </div>
+                {slot.mineBookingId ? (
+                  <Link className="btn secondary" href="/lap-swim/my">You are in</Link>
+                ) : (
+                  <form action={bookLap} style={{ display: "grid", gap: "0.3rem" }}>
+                    <input type="hidden" name="slot_id" value={slot.id} />
+                    {isSocial(slot) ? (
+                      <input type="hidden" name="minutes" value="90" />
+                    ) : (
+                      <select name="minutes" defaultValue="30" aria-label="Length">
+                        <option value="30">30 min</option>
+                        <option value="60">60 min</option>
+                        <option value="90">90 min</option>
+                      </select>
+                    )}
+                    <label style={{ fontSize: "0.8rem" }}>
+                      <input type="checkbox" name="share_ok" value="1" defaultChecked /> OK to share a lane
+                    </label>
+                    <input type="hidden" name="share_ok" value="0" />
+                    <button className="btn" type="submit" disabled={slot.blocked || full || !viewer.isLap}>
+                      {full ? "Full" : "Book"}
+                    </button>
+                  </form>
+                )}
+              </article>
+            );
+          })}
+        </div>
+        <p className="muted" style={{ marginTop: "1rem" }}>
+          Teens 15 to 17 need the teen waiver and swim in a parent&apos;s lane. A parent adds them from My swims. The gate code shows only on days your time is buddy covered.
+        </p>
       </div>
     </section>
   );
