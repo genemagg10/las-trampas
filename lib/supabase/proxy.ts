@@ -37,7 +37,8 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
   const path = request.nextUrl.pathname;
-  const needsAuth = protectedPrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+  const isTokenLink = path.startsWith("/lap-swim/cancel/");
+  const needsAuth = !isTokenLink && protectedPrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
 
   if (!user && needsAuth) {
     const url = request.nextUrl.clone();
