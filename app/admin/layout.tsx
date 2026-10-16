@@ -8,7 +8,7 @@ const links = [
   ["/admin/seasons", "Seasons & fees"],
   ["/admin/events", "Events"],
   ["/admin/slots", "Lanes"],
-  ["/admin/no-shows", "No-shows"],
+  ["/admin/no-shows", "Strikes"],
   ["/admin/waivers", "Waivers"],
   ["/admin/payments", "Payments"],
   ["/admin/announcements", "Updates"],

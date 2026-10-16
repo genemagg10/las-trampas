@@ -3,8 +3,8 @@ import { Badge, Notice } from "@/components/ui";
 import { bookLap } from "@/lib/actions/lap";
 import { readFlash } from "@/lib/flash";
 import { formatDay, formatTime } from "@/lib/format";
-import { coverPullers, isSocial, isUnlocked, laDate, nearestCovered } from "@/lib/lap/rules";
-import { loadBoard, type BoardSlot } from "@/lib/lap/server";
+import { coverPullers, isSocial, laDate, nearestCovered } from "@/lib/lap/rules";
+import { loadBoard, loadPolicy, type BoardSlot } from "@/lib/lap/server";
 import { getViewer } from "@/lib/viewer";
 
 export const metadata = { title: "Lap swim" };
@@ -47,14 +47,13 @@ export default async function LapSwimPage({
   }
 
   const board = await loadBoard(viewer.person.id, 8);
-  const now = new Date();
   const pullers = coverPullers(board);
   const days = [...new Set(board.map((s) => s.day))];
   const active = params.day && days.includes(params.day) ? params.day : days[0];
   const daySlots = board.filter((s) => s.day === active);
   const confirmSlot = params.confirm ? board.find((s) => s.id === params.confirm) : undefined;
   const suggestions = confirmSlot ? nearestCovered(confirmSlot, board) : [];
-  const unlockedNow = board.some((s) => isUnlocked(now, s.starts_at));
+  const policy = await loadPolicy();
 
   return (
     <section className="band">
@@ -63,9 +62,9 @@ export default async function LapSwimPage({
           <p className="eyebrow">Lap swim</p>
           <h2>Book a lap swim</h2>
           <p>
-            Half-hour times, 6 swimmers each, one swimmer per lane (sharing is optional). Up to 3 days a week and 60 minutes a day.
-            {unlockedNow ? " It is Wednesday or later, so open times this week are unlocked for extra days." : " From Wednesday on, open times that week unlock for extra days."}
-            {" "}A buddy is anyone else in the same half hour.
+            Half-hour times, 6 swimmers each, one swimmer per lane (sharing is optional). Book 30, 60 or 90 minutes at a time.
+            {policy.caps_enabled ? ` Current limits: ${policy.max_days_per_week} days a week, ${policy.max_minutes_per_day} minutes a day.` : ""}
+            {" "}A buddy is anyone else in the same half hour. Please cancel at least {policy.late_cancel_hours} hours ahead: later cancels and no-shows count as strikes (draft policy, pending board approval).
           </p>
         </div>
         <Notice {...flash} />

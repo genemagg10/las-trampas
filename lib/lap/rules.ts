@@ -1,8 +1,5 @@
 // Lap swim rules (Phelps, Oct 2026). Pure functions so they can be unit tested.
 export const ZONE = "America/Los_Angeles";
-export const DAY_LIMIT = 3;
-export const MINUTE_LIMIT = 60;
-
 export type SlotLite = { id: string; starts_at: string; ends_at: string; capacity: number; booked: number; blocked?: boolean };
 
 export function laDate(value: string | Date): string {
@@ -29,33 +26,65 @@ export function isSocial(slot: { starts_at: string; ends_at: string }) {
   return minutesOf(slot) >= 90;
 }
 
-// Extra days and minutes unlock automatically from Wednesday for open slots in the current week.
-export function isUnlocked(now: Date, slotStart: string) {
-  const today = laDate(now);
-  return weekStart(today) === weekStart(laDate(slotStart)) && isoDow(today) >= 3;
-}
+export type LapPolicy = {
+  caps_enabled: boolean;
+  max_days_per_week: number;
+  max_minutes_per_day: number;
+  late_cancel_hours: number;
+  late_cancel_strikes: number;
+  no_show_strikes: number;
+  strike_limit: number;
+  strike_window_days: number;
+  suspension_days: number;
+};
 
+// DRAFT defaults; the board approves the policy. Stored in club_settings.lap_policy.
+export const DEFAULT_POLICY: LapPolicy = {
+  caps_enabled: false,
+  max_days_per_week: 3,
+  max_minutes_per_day: 60,
+  late_cancel_hours: 12,
+  late_cancel_strikes: 1,
+  no_show_strikes: 1,
+  strike_limit: 3,
+  strike_window_days: 60,
+  suspension_days: 14,
+};
+
+// Optional caps, off unless the board turns them on.
 export function checkCaps(input: {
-  now: Date;
+  policy: LapPolicy;
   existing: { starts_at: string; ends_at: string }[];
   adding: { starts_at: string; ends_at: string }[];
 }): string | null {
+  const { policy } = input;
+  if (!policy.caps_enabled) return null;
   const all = [...input.existing];
   for (const slot of input.adding) {
-    if (isUnlocked(input.now, slot.starts_at)) {
-      all.push(slot);
-      continue;
-    }
     const day = laDate(slot.starts_at);
-    const sameDay = all.filter((s) => laDate(s.starts_at) === day);
-    const minutes = sameDay.reduce((sum, s) => sum + Math.min(minutesOf(s), MINUTE_LIMIT), 0) + Math.min(minutesOf(slot), MINUTE_LIMIT);
-    if (minutes > MINUTE_LIMIT) return `The limit is ${MINUTE_LIMIT} minutes a day. Extra time opens up for open slots from Wednesday.`;
+    const minutes = all.filter((s) => laDate(s.starts_at) === day).reduce((sum, s) => sum + minutesOf(s), 0) + minutesOf(slot);
+    if (minutes > policy.max_minutes_per_day) return `The current limit is ${policy.max_minutes_per_day} minutes a day.`;
     const week = weekStart(day);
     const days = new Set(all.filter((s) => weekStart(laDate(s.starts_at)) === week).map((s) => laDate(s.starts_at)));
-    if (!days.has(day) && days.size >= DAY_LIMIT) return `The limit is ${DAY_LIMIT} days a week. Extra days open up for open slots from Wednesday.`;
+    if (!days.has(day) && days.size >= policy.max_days_per_week) return `The current limit is ${policy.max_days_per_week} days a week.`;
     all.push(slot);
   }
   return null;
+}
+
+export function isLateCancel(now: Date, startsAt: string, policy: LapPolicy) {
+  return new Date(startsAt).getTime() - now.getTime() < policy.late_cancel_hours * 3600000;
+}
+
+export type Strike = { id: string; reason: string; points: number; created_at: string; cleared_at: string | null };
+
+export function strikeStatus(strikes: Strike[], policy: LapPolicy, now: Date) {
+  const windowStart = now.getTime() - policy.strike_window_days * 86400000;
+  const active = strikes.filter((s) => !s.cleared_at && new Date(s.created_at).getTime() > windowStart);
+  const points = active.reduce((sum, s) => sum + s.points, 0);
+  const last = active.reduce((m, s) => Math.max(m, new Date(s.created_at).getTime()), 0);
+  const until = points >= policy.strike_limit && last ? new Date(last + policy.suspension_days * 86400000) : null;
+  return { points, active, suspendedUntil: until && until > now ? until : null };
 }
 
 // Consecutive 30-minute slots from one start time (30, 60 or 90 minutes).

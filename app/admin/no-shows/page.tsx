@@ -1,5 +1,7 @@
 import { Notice } from "@/components/ui";
-import { markNoShow } from "@/lib/actions/lap";
+import { clearStrike, markNoShow } from "@/lib/actions/lap";
+import { strikeStatus } from "@/lib/lap/rules";
+import { loadPolicy, loadStrikes } from "@/lib/lap/server";
 import { readFlash } from "@/lib/flash";
 import { formatWhen } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -24,28 +26,56 @@ export default async function NoShowsPage({ searchParams }: { searchParams: Prom
         .gte("lap_slots.starts_at", since)
         .lte("lap_slots.starts_at", nowDate.toISOString())).data ?? []) as unknown as Row[])
     : [];
-  const all = admin
-    ? (((await admin.from("lap_bookings").select("person_id, people!lap_bookings_person_id_fkey(first_name, last_name)").eq("status", "no_show")).data ?? []) as unknown as Row[])
-    : [];
-  const counts = new Map<string, { name: string; n: number }>();
-  for (const r of all) {
-    const c = counts.get(r.person_id) ?? { name: `${r.people?.first_name ?? ""} ${r.people?.last_name ?? ""}`.trim(), n: 0 };
-    c.n += 1;
-    counts.set(r.person_id, c);
+  const policy = await loadPolicy();
+  const strikes = await loadStrikes(null, policy);
+  const people = new Map<string, { name: string; rows: typeof strikes.rows }>();
+  for (const r of strikes.rows) {
+    const p = people.get(r.person_id) ?? { name: r.name || "Member", rows: [] };
+    p.rows.push(r);
+    people.set(r.person_id, p);
   }
   recent.sort((a, b) => (b.lap_slots?.starts_at ?? "").localeCompare(a.lap_slots?.starts_at ?? ""));
   return (
     <div>
-      <h3>Lap swim no-shows</h3>
+      <h3>Lap swim strikes</h3>
       <Notice {...flash} />
+      <p className="muted">
+        Draft policy, pending board approval: a cancel under {policy.late_cancel_hours} hours counts {policy.late_cancel_strikes}, a no-show counts {policy.no_show_strikes}.
+        {" "}{policy.strike_limit} strikes within {policy.strike_window_days} days pauses booking for {policy.suspension_days} days. Booking caps are {policy.caps_enabled ? "on" : "off"}.
+        {" "}These live in the club setting lap_policy.
+      </p>
       <div className="card">
-        <h4>No-show counts</h4>
-        {counts.size === 0 ? <p>No no-shows recorded.</p> : (
-          <ul>
-            {[...counts.values()].sort((a, b) => b.n - a.n).map((c) => (
-              <li key={c.name}>{c.name}: {c.n}</li>
-            ))}
-          </ul>
+        <h4>Strikes by member</h4>
+        {!strikes.ready ? <p className="muted">Strikes are worked out from bookings until the lap update is run in the database. Clearing turns on after that.</p> : null}
+        {people.size === 0 ? <p>No strikes recorded.</p> : (
+          <table>
+            <tbody>
+              {[...people.entries()].map(([id, p]) => {
+                const st = strikeStatus(p.rows, policy, nowDate);
+                return (
+                  <tr key={id}>
+                    <td><strong>{p.name}</strong></td>
+                    <td>{st.points} active{st.suspendedUntil ? `, paused until ${formatWhen(st.suspendedUntil)}` : ""}</td>
+                    <td>
+                      {p.rows.map((r) => (
+                        <div key={r.id} style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                          <span className={r.cleared_at ? "muted" : undefined}>
+                            {r.reason === "late_cancel" ? "Late cancel" : r.reason === "no_show" ? "No-show" : "Strike"} {formatWhen(r.created_at)}{r.cleared_at ? " (cleared)" : ""}
+                          </span>
+                          {strikes.ready && !r.cleared_at ? (
+                            <form action={clearStrike}>
+                              <input type="hidden" name="strike_id" value={r.id} />
+                              <button className="btn secondary" type="submit">Clear</button>
+                            </form>
+                          ) : null}
+                        </div>
+                      ))}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         )}
       </div>
       <div className="card" style={{ marginTop: "1rem" }}>

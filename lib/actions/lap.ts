@@ -2,8 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { checkCaps, pickRun } from "@/lib/lap/rules";
-import { loadBoard } from "@/lib/lap/server";
+import { checkCaps, isLateCancel, pickRun, strikeStatus } from "@/lib/lap/rules";
+import { loadBoard, loadPolicy, loadStrikes } from "@/lib/lap/server";
 import { readCancelToken } from "@/lib/lap/token";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -38,10 +38,15 @@ export async function bookLap(formData: FormData) {
   const board = await loadBoard(viewer.person!.id, 8);
   const run = pickRun(board, startId, minutes);
   if (typeof run === "string") go("/lap-swim", "error", run);
+  const policy = await loadPolicy();
+  const strikes = strikeStatus((await loadStrikes(personId, policy)).rows, policy, new Date());
+  if (strikes.suspendedUntil) {
+    go("/lap-swim", "error", `Booking is paused until ${strikes.suspendedUntil.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric" })} because of strikes. Talk to the Lap Swim VP if this looks wrong.`);
+  }
 
   if (!forTeen) {
     const mine = board.filter((s) => s.mineBookingId);
-    const capError = checkCaps({ now: new Date(), existing: mine, adding: run.filter((s) => !board.find((b) => b.id === s.id)?.mineBookingId) });
+    const capError = checkCaps({ policy, existing: mine, adding: run.filter((s) => !board.find((b) => b.id === s.id)?.mineBookingId) });
     if (capError) go("/lap-swim", "error", capError);
     const alone = run.every((s) => (board.find((b) => b.id === s.id)?.others.length ?? 0) === 0);
     if (alone && !confirmed) {
@@ -79,14 +84,27 @@ export async function bookLap(formData: FormData) {
   go("/lap-swim/my", "notice", `Booked ${minutes} minutes. Your cancel links are below.`);
 }
 
+async function slotStart(bookingId: string) {
+  const admin = createAdminClient();
+  if (!admin) return null;
+  const res = await admin.from("lap_bookings").select("lap_slots(starts_at)").eq("id", bookingId).maybeSingle();
+  const slot = res.data?.lap_slots as { starts_at: string } | { starts_at: string }[] | null | undefined;
+  return (Array.isArray(slot) ? slot[0] : slot)?.starts_at ?? null;
+}
+
 export async function cancelLap(formData: FormData) {
-  const supabase = await db();
   const back = String(formData.get("back") || "/lap-swim/my");
-  const { error } = await supabase.from("lap_bookings").update({ status: "cancelled" }).eq("id", String(formData.get("booking_id")));
+  const bookingId = String(formData.get("booking_id"));
+  const policy = await loadPolicy();
+  const start = await slotStart(bookingId);
+  const late = Boolean(start && isLateCancel(new Date(), start, policy) && policy.late_cancel_strikes > 0);
+  if (late && formData.get("confirm_late") !== "1") redirect(`${back}?late=${bookingId}#late`);
+  const supabase = await db();
+  const { error } = await supabase.from("lap_bookings").update({ status: "cancelled" }).eq("id", bookingId);
   if (error) go(back, "error", friendly(error.message));
   revalidatePath("/lap-swim");
   revalidatePath("/lap-swim/my");
-  go(back, "notice", "Cancelled. The others in that slot have been told.");
+  go(back, "notice", late ? "Cancelled. This late cancel counts as a strike. The others in that slot have been told." : "Cancelled. The others in that slot have been told.");
 }
 
 export async function cancelByToken(formData: FormData) {
@@ -100,6 +118,16 @@ export async function cancelByToken(formData: FormData) {
   if (error) go(path, "error", /only cancel your own/i.test(error.message) ? "Link cancelling is switched on after the club runs the lap update. Sign in and use My swims to cancel." : friendly(error.message));
   revalidatePath("/lap-swim");
   go(path, "notice", "Cancelled. The others in that slot have been told.");
+}
+
+export async function clearStrike(formData: FormData) {
+  const viewer = await getViewer();
+  if (!can(viewer, "lap")) go("/admin/no-shows", "error", "Only the Lap Swim VP or an admin can do that.");
+  const supabase = await db();
+  const { error } = await supabase.from("lap_strikes").update({ cleared_at: new Date().toISOString(), cleared_by: viewer.person?.id ?? null }).eq("id", String(formData.get("strike_id")));
+  if (error) go("/admin/no-shows", "error", friendly(error.message));
+  revalidatePath("/admin/no-shows");
+  go("/admin/no-shows", "notice", "Strike cleared.");
 }
 
 export async function markNotificationsRead() {

@@ -1,6 +1,7 @@
 -- Lap swim rules from the Lap Swim coach (Phelps), Oct 2026.
 -- 30-minute pool-wide slots (6 spots), Sunday Social 90-minute block (capacity in the template, default 12).
--- Caps: 3 days per week and 60 minutes per day; from Wednesday on, open slots in the current week unlock both caps.
+-- Booking caps are OFF by default (board decision Oct 2026). The policy lives in club_settings key 'lap_policy'
+-- so the board can switch caps back on. Late cancels and no-shows give strikes; too many strikes suspends booking.
 -- Buddy = another swimmer in the same 30-minute slot. Teens 15-17: teen waiver, booked by a parent in the same slot.
 -- ASCII only.
 
@@ -70,6 +71,89 @@ as $$
   select (extract(epoch from (s.ends_at - s.starts_at)) / 60)::int from public.lap_slots s where s.id = p_slot;
 $$;
 
+-- Lap policy (DRAFT, board to approve). Defaults below; edit club_settings.lap_policy to change.
+insert into public.club_settings (key, value) values ('lap_policy', jsonb_build_object(
+  'caps_enabled', false,
+  'max_days_per_week', 3,
+  'max_minutes_per_day', 60,
+  'late_cancel_hours', 12,
+  'late_cancel_strikes', 1,
+  'no_show_strikes', 1,
+  'strike_limit', 3,
+  'strike_window_days', 60,
+  'suspension_days', 14
+)) on conflict (key) do nothing;
+
+create or replace function private.lap_policy()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select jsonb_build_object(
+    'caps_enabled', false, 'max_days_per_week', 3, 'max_minutes_per_day', 60,
+    'late_cancel_hours', 12, 'late_cancel_strikes', 1, 'no_show_strikes', 1,
+    'strike_limit', 3, 'strike_window_days', 60, 'suspension_days', 14
+  ) || coalesce((select value from public.club_settings where key = 'lap_policy'), '{}'::jsonb);
+$$;
+
+create table if not exists public.lap_strikes (
+  id uuid primary key default gen_random_uuid(),
+  person_id uuid not null references public.people (id) on delete cascade,
+  booking_id uuid references public.lap_bookings (id) on delete set null,
+  reason text not null check (reason in ('late_cancel', 'no_show', 'manual')),
+  points int not null default 1 check (points >= 0),
+  note text,
+  created_at timestamptz not null default now(),
+  cleared_at timestamptz,
+  cleared_by uuid references public.people (id)
+);
+create index if not exists lap_strikes_person_idx on public.lap_strikes (person_id, created_at desc);
+alter table public.lap_strikes enable row level security;
+grant select, update on public.lap_strikes to authenticated;
+create policy lap_strikes_read on public.lap_strikes for select
+  using (person_id = private.current_person_id() or private.is_admin() or private.has_board_scope('lap'));
+create policy lap_strikes_clear on public.lap_strikes for update
+  using (private.is_admin() or private.has_board_scope('lap'))
+  with check (private.is_admin() or private.has_board_scope('lap'));
+
+-- Returns the suspension end time if the person is suspended, else null.
+create or replace function private.lap_suspended_until(p_person uuid)
+returns timestamptz
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_policy jsonb := private.lap_policy();
+  v_points int;
+  v_last timestamptz;
+begin
+  select coalesce(sum(points), 0), max(created_at) into v_points, v_last
+  from public.lap_strikes
+  where person_id = p_person and cleared_at is null
+    and created_at > now() - make_interval(days => (v_policy ->> 'strike_window_days')::int);
+  if v_points >= (v_policy ->> 'strike_limit')::int
+     and v_last + make_interval(days => (v_policy ->> 'suspension_days')::int) > now() then
+    return v_last + make_interval(days => (v_policy ->> 'suspension_days')::int);
+  end if;
+  return null;
+end;
+$$;
+
+create or replace function public.my_lap_suspension()
+returns timestamptz
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select private.lap_suspended_until(private.current_person_id());
+$$;
+grant execute on function public.my_lap_suspension() to authenticated;
+
 create or replace function private.assert_can_book(p_slot uuid, p_person uuid)
 returns void
 language plpgsql
@@ -83,8 +167,7 @@ declare
   v_tz text;
   v_booked int;
   v_day date;
-  v_today date;
-  v_unlocked boolean;
+  v_policy jsonb;
   v_days int;
   v_minutes int;
 begin
@@ -156,24 +239,26 @@ begin
     raise exception 'Sign the lap swim waiver before booking.';
   end if;
 
-  select s.timezone into v_tz from public.seasons s where s.year = v_slot.season;
-  v_day := (v_slot.starts_at at time zone v_tz)::date;
-  v_today := (now() at time zone v_tz)::date;
-  -- From Wednesday on, open slots in the current week ignore the day and minute caps.
-  v_unlocked := date_trunc('week', v_day) = date_trunc('week', v_today)
-    and extract(isodow from v_today) >= 3;
-  if v_unlocked then
+  if private.lap_suspended_until(p_person) is not null then
+    raise exception 'Booking is paused until % because of strikes. Talk to the Lap Swim VP if this looks wrong.',
+      to_char(private.lap_suspended_until(p_person) at time zone 'America/Los_Angeles', 'Mon DD');
+  end if;
+
+  v_policy := private.lap_policy();
+  if not coalesce((v_policy ->> 'caps_enabled')::boolean, false) then
     return;
   end if;
+
+  select s.timezone into v_tz from public.seasons s where s.year = v_slot.season;
+  v_day := (v_slot.starts_at at time zone v_tz)::date;
 
   select coalesce(sum(extract(epoch from (s.ends_at - s.starts_at)) / 60), 0)::int into v_minutes
   from public.lap_bookings b
   join public.lap_slots s on s.id = b.slot_id
   where b.person_id = p_person and b.status = 'booked' and s.id <> p_slot
     and (s.starts_at at time zone v_tz)::date = v_day;
-  -- The Sunday Social block counts as 60 minutes.
-  if v_minutes + least(private.slot_minutes(p_slot), 60) > 60 then
-    raise exception 'The limit is 60 minutes a day (it lifts for open slots from Wednesday).';
+  if v_minutes + private.slot_minutes(p_slot) > (v_policy ->> 'max_minutes_per_day')::int then
+    raise exception 'The limit is % minutes a day.', v_policy ->> 'max_minutes_per_day';
   end if;
 
   select count(distinct (s.starts_at at time zone v_tz)::date)::int into v_days
@@ -182,8 +267,8 @@ begin
   where b.person_id = p_person and b.status = 'booked' and s.id <> p_slot
     and date_trunc('week', (s.starts_at at time zone v_tz)::date) = date_trunc('week', v_day)
     and (s.starts_at at time zone v_tz)::date <> v_day;
-  if v_days >= 3 then
-    raise exception 'The limit is 3 days a week (extra days unlock on Wednesday for open slots).';
+  if v_days >= (v_policy ->> 'max_days_per_week')::int then
+    raise exception 'The limit is % days a week.', v_policy ->> 'max_days_per_week';
   end if;
 end;
 $$;
@@ -198,6 +283,8 @@ declare
   v_person uuid;
   v_staff boolean;
   v_target public.people%rowtype;
+  v_slot public.lap_slots%rowtype;
+  v_policy jsonb;
 begin
   v_person := private.current_person_id();
   v_staff := private.is_admin() or private.has_board_scope('lap') or private.is_service();
@@ -230,8 +317,15 @@ begin
     if old.person_id is distinct from v_person and old.booked_by is distinct from v_person and not v_staff then
       raise exception 'You can only cancel your own booking.';
     end if;
-    if not v_staff then
-      perform private.assert_can_cancel(old.slot_id);
+    -- No cutoff: late cancels are allowed but give a strike (staff cancels do not).
+    if not (private.is_admin() or private.has_board_scope('lap')) then
+      select * into v_slot from public.lap_slots where id = old.slot_id;
+      v_policy := private.lap_policy();
+      if now() > v_slot.starts_at - make_interval(hours => (v_policy ->> 'late_cancel_hours')::int)
+         and (v_policy ->> 'late_cancel_strikes')::int > 0 then
+        insert into public.lap_strikes (person_id, booking_id, reason, points)
+        values (old.person_id, old.id, 'late_cancel', (v_policy ->> 'late_cancel_strikes')::int);
+      end if;
     end if;
     new.cancelled_at := now();
     return new;
@@ -250,8 +344,16 @@ begin
     if new.status = 'no_show' and not v_staff then
       raise exception 'Only the Lap Swim VP can mark a no-show.';
     end if;
-    if new.status = 'no_show' then
+    if new.status = 'no_show' and old.status is distinct from 'no_show' then
       new.no_show_marked_at := now();
+      v_policy := private.lap_policy();
+      if (v_policy ->> 'no_show_strikes')::int > 0 then
+        insert into public.lap_strikes (person_id, booking_id, reason, points)
+        values (old.person_id, old.id, 'no_show', (v_policy ->> 'no_show_strikes')::int);
+      end if;
+    elsif old.status = 'no_show' and new.status is distinct from 'no_show' then
+      update public.lap_strikes set cleared_at = now(), cleared_by = v_person
+      where booking_id = old.id and reason = 'no_show' and cleared_at is null;
     end if;
     if new.status = 'attended' and old.person_id is distinct from v_person and not v_staff then
       raise exception 'You can only check in your own booking.';
@@ -340,7 +442,7 @@ create trigger lap_bookings_notify
   after insert or update of status on public.lap_bookings
   for each row execute function private.lap_booking_notify();
 
--- Pool-wide slots: the sanctioned settings.
-update public.lap_settings set max_per_week = 99, min_buddies = 2, buddy_mode = 'same_slot';
+-- Pool-wide slots. Caps now live in lap_policy; cancel_cutoff is no longer used (strikes instead).
+update public.lap_settings set max_per_week = 99, min_buddies = 2, buddy_mode = 'same_slot', cancel_cutoff = interval '0 seconds';
 insert into public.club_settings (key, value) values ('sunday_social_capacity', '12'::jsonb)
 on conflict (key) do nothing;

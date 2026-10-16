@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { laDate, type SlotLite } from "@/lib/lap/rules";
+import { DEFAULT_POLICY, isLateCancel, laDate, type LapPolicy, type SlotLite, type Strike } from "@/lib/lap/rules";
 
 export type BoardSlot = SlotLite & {
   day: string;
@@ -80,3 +80,48 @@ export async function myNotifications(personId: string) {
 }
 
 export type Notification = { id: string; kind: string; title: string; body: string | null; urgent: boolean; read_at: string | null; created_at: string };
+
+
+export async function loadPolicy(): Promise<LapPolicy> {
+  const admin = createAdminClient();
+  if (!admin) return DEFAULT_POLICY;
+  const res = await admin.from("club_settings").select("value").eq("key", "lap_policy").maybeSingle();
+  return { ...DEFAULT_POLICY, ...((res.data?.value as Partial<LapPolicy>) ?? {}) };
+}
+
+// Strikes from lap_strikes; before the lap migration runs, derive them from bookings (cannot be cleared yet).
+export async function loadStrikes(personId: string | null, policy: LapPolicy): Promise<{ ready: boolean; rows: (Strike & { person_id: string; name?: string })[] }> {
+  const admin = createAdminClient();
+  if (!admin) return { ready: false, rows: [] };
+  let q = admin.from("lap_strikes").select("id, person_id, reason, points, created_at, cleared_at, people!lap_strikes_person_id_fkey(first_name, last_name)").order("created_at", { ascending: false });
+  if (personId) q = q.eq("person_id", personId);
+  const res = await q;
+  if (!res.error) {
+    return {
+      ready: true,
+      rows: ((res.data ?? []) as unknown as (Strike & { person_id: string; people: { first_name: string; last_name: string } | null })[]).map((r) => ({
+        ...r,
+        name: `${r.people?.first_name ?? ""} ${r.people?.last_name ?? ""}`.trim(),
+      })),
+    };
+  }
+  let b = admin
+    .from("lap_bookings")
+    .select("id, person_id, status, cancelled_at, updated_at, people!lap_bookings_person_id_fkey(first_name, last_name), lap_slots(starts_at)")
+    .in("status", ["no_show", "cancelled"]);
+  if (personId) b = b.eq("person_id", personId);
+  const rows = ((await b).data ?? []) as unknown as {
+    id: string; person_id: string; status: string; cancelled_at: string | null; updated_at: string;
+    people: { first_name: string; last_name: string } | null; lap_slots: { starts_at: string } | null;
+  }[];
+  const out: (Strike & { person_id: string; name?: string })[] = [];
+  for (const r of rows) {
+    const name = `${r.people?.first_name ?? ""} ${r.people?.last_name ?? ""}`.trim();
+    if (r.status === "no_show" && policy.no_show_strikes > 0) {
+      out.push({ id: `ns-${r.id}`, person_id: r.person_id, name, reason: "no_show", points: policy.no_show_strikes, created_at: r.updated_at, cleared_at: null });
+    } else if (r.status === "cancelled" && r.cancelled_at && r.lap_slots && policy.late_cancel_strikes > 0 && isLateCancel(new Date(r.cancelled_at), r.lap_slots.starts_at, policy)) {
+      out.push({ id: `lc-${r.id}`, person_id: r.person_id, name, reason: "late_cancel", points: policy.late_cancel_strikes, created_at: r.cancelled_at, cleared_at: null });
+    }
+  }
+  return { ready: false, rows: out };
+}

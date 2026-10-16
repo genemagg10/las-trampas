@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Notice } from "@/components/ui";
 import { cancelByToken } from "@/lib/actions/lap";
 import { formatWhen } from "@/lib/format";
+import { isLateCancel } from "@/lib/lap/rules";
+import { loadPolicy } from "@/lib/lap/server";
 import { readCancelToken } from "@/lib/lap/token";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -17,6 +19,8 @@ export default async function CancelPage({ params, searchParams }: { params: Pro
   const row = id && admin
     ? ((await admin.from("lap_bookings").select("status, lap_slots(starts_at)").eq("id", id).maybeSingle()).data as { status: string; lap_slots: { starts_at: string } | null } | null)
     : null;
+  const policy = await loadPolicy();
+  const late = Boolean(row?.lap_slots && isLateCancel(new Date(), row.lap_slots.starts_at, policy) && policy.late_cancel_strikes > 0);
   return (
     <section className="band">
       <div className="wrap" style={{ maxWidth: 560 }}>
@@ -29,8 +33,9 @@ export default async function CancelPage({ params, searchParams }: { params: Pro
         ) : (
           <form action={cancelByToken} className="card">
             <p>Cancel your lap swim at {row.lap_slots ? formatWhen(row.lap_slots.starts_at) : "this time"}? The others in that half hour will be told.</p>
+            {late ? <p className="alert error"><strong>This will count as a strike.</strong> The swim is less than {policy.late_cancel_hours} hours away. You can still cancel.</p> : null}
             <input type="hidden" name="token" value={token} />
-            <button className="btn" type="submit">Yes, cancel</button>
+            <button className="btn" type="submit">{late ? "Cancel anyway" : "Yes, cancel"}</button>
           </form>
         )}
         <p><Link href="/lap-swim">Lap swim</Link></p>

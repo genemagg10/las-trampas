@@ -4,8 +4,8 @@ import { Badge, Notice } from "@/components/ui";
 import { bookLap, cancelLap, markNotificationsRead } from "@/lib/actions/lap";
 import { readFlash } from "@/lib/flash";
 import { formatDay, formatTime, formatWhen } from "@/lib/format";
-import { laDate } from "@/lib/lap/rules";
-import { loadBoard, myNotifications } from "@/lib/lap/server";
+import { isLateCancel, laDate, strikeStatus } from "@/lib/lap/rules";
+import { loadBoard, loadPolicy, loadStrikes, myNotifications } from "@/lib/lap/server";
 import { cancelToken } from "@/lib/lap/token";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getViewer } from "@/lib/viewer";
@@ -13,8 +13,9 @@ import { getViewer } from "@/lib/viewer";
 export const metadata = { title: "My swims" };
 export const dynamic = "force-dynamic";
 
-export default async function MySwimsPage({ searchParams }: { searchParams: Promise<{ notice?: string; error?: string }> }) {
-  const flash = await readFlash(searchParams);
+export default async function MySwimsPage({ searchParams }: { searchParams: Promise<{ notice?: string; error?: string; late?: string }> }) {
+  const params = await searchParams;
+  const flash = await readFlash(Promise.resolve(params));
   const viewer = await getViewer();
   if (!viewer.person) {
     return (
@@ -35,6 +36,10 @@ export default async function MySwimsPage({ searchParams }: { searchParams: Prom
     ? (((await admin.from("people").select("id, first_name, kind").eq("household_id", viewer.person.household_id).eq("kind", "teen")).data ?? []) as { id: string; first_name: string }[])
     : [];
   const unread = notes.rows.filter((n) => !n.read_at).length;
+  const policy = await loadPolicy();
+  const now = new Date();
+  const strikes = strikeStatus((await loadStrikes(viewer.person.id, policy)).rows, policy, now);
+  const lateSlot = params.late ? mine.find((s) => s.mineBookingId === params.late) : undefined;
 
   return (
     <section className="band">
@@ -48,6 +53,28 @@ export default async function MySwimsPage({ searchParams }: { searchParams: Prom
         <p>
           <Link className="btn secondary" href="/lap-swim">Book more</Link>
         </p>
+        <div className={strikes.suspendedUntil ? "alert error" : "card"} style={{ margin: "0.8rem 0" }}>
+          <strong>Strikes: {strikes.points} of {policy.strike_limit}</strong> in the last {policy.strike_window_days} days.
+          {strikes.suspendedUntil
+            ? ` Booking is paused until ${formatDay(strikes.suspendedUntil)}. Talk to the Lap Swim VP if this looks wrong.`
+            : ` A cancel under ${policy.late_cancel_hours} hours before your swim or a no-show counts as a strike. ${policy.strike_limit} strikes pauses booking for ${policy.suspension_days} days.`}
+          <div className="muted" style={{ fontSize: "0.8rem" }}>Draft policy, pending board approval.</div>
+        </div>
+        {lateSlot ? (
+          <div id="late" className="alert error" style={{ margin: "0.8rem 0" }}>
+            <p>
+              <strong>This will count as a strike.</strong> Your swim at {formatDay(lateSlot.starts_at)} {formatTime(lateSlot.starts_at)} is less than {policy.late_cancel_hours} hours away. You can still cancel, and the others in the slot will be told.
+            </p>
+            <div style={{ display: "flex", gap: "0.6rem" }}>
+              <form action={cancelLap}>
+                <input type="hidden" name="booking_id" value={lateSlot.mineBookingId!} />
+                <input type="hidden" name="confirm_late" value="1" />
+                <button className="btn" type="submit">Cancel anyway</button>
+              </form>
+              <Link className="btn secondary" href="/lap-swim/my">Keep my swim</Link>
+            </div>
+          </div>
+        ) : null}
 
         {mine.length === 0 ? <p className="card">No swims booked in the next week.</p> : null}
         <div className="lane-grid">
@@ -63,6 +90,9 @@ export default async function MySwimsPage({ searchParams }: { searchParams: Prom
                   <div style={{ margin: "0.3rem 0" }}>
                     {alone ? <Badge tone="coral">You are alone so far. Waiting for a buddy.</Badge> : <Badge tone="lawn">With {slot.others.join(", ")}</Badge>}
                   </div>
+                  {isLateCancel(now, slot.starts_at, policy) ? (
+                    <div style={{ fontSize: "0.8rem" }} className="muted">Less than {policy.late_cancel_hours} hours away: cancelling now counts as a strike.</div>
+                  ) : null}
                   <div style={{ fontSize: "0.85rem" }}>
                     One-tap cancel link: <Link href={link}>cancel this half hour</Link>
                   </div>
