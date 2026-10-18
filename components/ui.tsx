@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { serviceStatus } from "@/lib/env";
+import { Seahorse } from "@/components/seahorse";
 
 export const photos = {
   poolDeck: { src: "/photos/pool-deck.jpg", alt: "The Las Trampas lap pool on a sunny day, with lane lines, lounge chairs, umbrellas and the lifeguard chair" },
@@ -19,16 +20,19 @@ export function Photo({
   ratio = "video",
   caption,
   priority = false,
+  egg = false,
 }: {
   src: string;
   alt: string;
   ratio?: "video" | "card" | "square" | "wide";
   caption?: string;
   priority?: boolean;
+  egg?: boolean;
 }) {
   return (
     <figure className={`photo ratio-${ratio}`}>
       <Image src={src} alt={alt} fill priority={priority} sizes="(max-width: 760px) 100vw, 50vw" />
+      {egg ? <Seahorse id="home-photo" size={20} className="egg-photo" /> : null}
       {caption ? <figcaption>{caption}</figcaption> : null}
     </figure>
   );

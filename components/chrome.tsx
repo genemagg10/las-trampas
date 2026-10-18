@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MenuToggle } from "@/components/menu";
 import { Wordmark, memberNav, publicNav } from "@/components/ui";
 import { getViewer } from "@/lib/viewer";
+import { Seahorse } from "@/components/seahorse";
 
 export async function SiteHeader() {
   const viewer = await getViewer();
@@ -45,6 +46,7 @@ export async function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="site-footer">
+      <Seahorse id="footer" size={22} className="egg-footer" />
       <div className="wrap grid-3">
         <div className="footer-brand">
           <Image src="/brand/lt-seahorse-sm.png" alt="Las Trampas seahorse logo" width={46} height={60} />

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { Spot } from "./spots";
+import { Seahorse } from "@/components/seahorse";
 
 export function PoolMap({ spots }: { spots: Spot[] }) {
   const [active, setActive] = useState<number>(1);
@@ -20,6 +21,7 @@ export function PoolMap({ spots }: { spots: Spot[] }) {
           <span className="park-banner" style={{ left: "47%", top: "51%" }}>Pool Deck</span>
           <span className="park-banner green" style={{ left: "33%", top: "24%" }}>The Lawn</span>
           <span className="park-banner sun" style={{ left: "27%", top: "93%" }}>St. Mary&apos;s Road Parking</span>
+          <Seahorse id="pool-map" size={16} className="egg-map" style={{ left: "37%", top: "48%" }} />
           {spots.map((s) => (
             <button
               key={s.n}

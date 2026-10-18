@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AGE_GROUPS, EVENTS, RECORDS_SOURCE, getSwimRecords } from "@/lib/features";
+import { Seahorse } from "@/components/seahorse";
 
 export const metadata = { title: "Team records" };
 
@@ -30,11 +31,16 @@ export default async function RecordsPage({ searchParams }: { searchParams: Prom
               Boys
             </Link>
           </nav>
-          {EVENTS.map((event) => {
+          {EVENTS.map((event, eventIndex) => {
             const rows = mine.filter((r) => r.event === event).sort((a, b) => AGE_GROUPS.indexOf(a.age_group) - AGE_GROUPS.indexOf(b.age_group) || a.distance.localeCompare(b.distance));
             if (rows.length === 0) return null;
             return (
               <div key={event} style={{ marginBottom: "2rem" }}>
+                {eventIndex === 1 ? (
+                  <div className="records-divider">
+                    <Seahorse id="records" size={16} />
+                  </div>
+                ) : null}
                 <div className="section-head" style={{ marginBottom: "0.6rem" }}>
                   <p className="eyebrow">{gender}</p>
                   <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "1.6rem" }}>{event}</h3>

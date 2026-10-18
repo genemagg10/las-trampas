@@ -1,4 +1,5 @@
 import { getSnackShack, money } from "@/lib/features";
+import { Seahorse } from "@/components/seahorse";
 
 export const metadata = { title: "Snack Shack" };
 
@@ -42,6 +43,7 @@ export default async function SnackShackPage() {
             ))
           )}
           <p className="card">
+            <Seahorse id="snack-shack" size={16} style={{ float: "right", color: "var(--color-sun)", opacity: 0.45 }} />
             <b>The full regular menu isn’t posted yet.</b> Past club events have offered pre-made burritos and chips with salsa at the Snack Shack
             (Opening Day Party, May 2026).
           </p>

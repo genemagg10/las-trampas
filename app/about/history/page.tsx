@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Photo, photos } from "@/components/ui";
+import { Seahorse } from "@/components/seahorse";
 
 export const metadata = { title: "History" };
 
@@ -9,7 +10,9 @@ export default function HistoryPage() {
       <section className="page-hero">
         <Image src={photos.historyCrowd.src} alt="" fill priority sizes="100vw" />
         <div className="wrap">
-          <p className="eyebrow">History</p>
+          <p className="eyebrow">
+            History <Seahorse id="history" size={14} />
+          </p>
           <h1>Established 1958</h1>
           <p>After more than a year of planning and construction, Las Trampas Pool opened on August 17, 1958. 523 people came that first day.</p>
         </div>

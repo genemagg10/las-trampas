@@ -3,6 +3,7 @@ import { Fraunces, Inter } from "next/font/google";
 import { SiteFooter, SiteHeader } from "@/components/chrome";
 import { ServiceBanner } from "@/components/ui";
 import "./globals.css";
+import { LapSwimmer } from "@/components/lap-swimmer";
 
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main id="main">{children}</main>
         <SiteFooter />
+        <LapSwimmer />
       </body>
     </html>
   );

@@ -75,7 +75,7 @@ export default async function HomePage() {
           </div>
           <div className="grid-3">
             <article className="card">
-              <Photo {...photos.lapLanes} ratio="card" />
+              <Photo {...photos.lapLanes} ratio="card" egg />
               <h3>Lap swim</h3>
               <p>Sign the season waiver, book a lane, and see the gate code only on the day your buddy is confirmed.</p>
               <Link href="/programs">How lap swim works</Link>
