@@ -38,7 +38,7 @@ export default async function RecordsPage({ searchParams }: { searchParams: Prom
               <div key={event} style={{ marginBottom: "2rem" }}>
                 {eventIndex === 1 ? (
                   <div className="records-divider">
-                    <Seahorse id="records" size={16} />
+                    <Seahorse id="records" size={18} />
                   </div>
                 ) : null}
                 <div className="section-head" style={{ marginBottom: "0.6rem" }}>

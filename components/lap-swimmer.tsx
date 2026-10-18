@@ -49,7 +49,8 @@ export function LapSwimmer() {
               <g className="swim-arm swim-arm-front">
                 <path d="M33 13c3.5-3.5 7.5-5 12-4.5" />
               </g>
-              <path className="swim-water" d="M0 15.2c4 1.2 8-1.2 12 0s8 1.2 12 0 8-1.2 12 0 8 1.2 12 0V22H0z" />
+              <ellipse className="swim-wake" cx="24" cy="16.2" rx="23" ry="3.4" />
+              <path className="swim-water" d="M6 15.6c3 .9 6-.9 9 0s6 .9 9 0 6-.9 9 0 6 .9 9 0" />
             </svg>
             <span className="swim-bubbles">
               <i />

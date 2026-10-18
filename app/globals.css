@@ -351,8 +351,9 @@ body { padding-bottom: 26px; }
   95% { transform: rotate(-360deg); opacity: 0; }
   100% { transform: rotate(-360deg); opacity: 1; }
 }
-.swim-water { fill: rgba(91,192,235,0.75); animation: swim-ripple 1.1s linear infinite; }
-@keyframes swim-ripple { to { transform: translateX(-12px); } }
+.swim-wake { fill: rgba(91,192,235,0.55); }
+.swim-water { fill: none; stroke: rgba(255,255,255,0.9); stroke-width: 0.8; stroke-linecap: round; stroke-dasharray: 5 4; animation: swim-ripple 0.9s linear infinite; }
+@keyframes swim-ripple { to { stroke-dashoffset: 9; } }
 .swim-kick circle { fill: #fff; stroke: rgba(14,124,184,0.5); stroke-width: 0.5; animation: swim-kick 0.55s ease-out infinite; transform-origin: 5px 13px; }
 .swim-kick circle:nth-child(2) { animation-delay: -0.2s; }
 .swim-kick circle:nth-child(3) { animation-delay: -0.35s; }
@@ -398,5 +399,6 @@ body { padding-bottom: 26px; }
 .egg-footer:hover { opacity: 1; }
 .photo .egg-photo { position: absolute; right: 10px; bottom: 10px; color: #fff; opacity: 0.28; z-index: 2; }
 .records-divider { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 2rem; color: var(--color-pool); }
+.records-divider .seahorse-egg { opacity: 0.38; }
 .records-divider::before, .records-divider::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: 0.18; }
 .park-art .egg-map { position: absolute; z-index: 2; color: #0b4f7a; opacity: 0.35; }
