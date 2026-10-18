@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SEAHORSE_SPOTS, foundSeahorse } from "@/components/seahorse";
 
 // A tiny freestyle swimmer along the bottom of the page. Decorative only: pointer-events none,
 // hidden for reduced motion and print. Tapping where the swimmer is (clicks still pass through) makes a splash.
 export function LapSwimmer() {
   const ref = useRef<HTMLDivElement>(null);
   const [splash, setSplash] = useState(0);
+  const [found, setFound] = useState<string | null>(null);
 
   useEffect(() => {
     function onDown(e: PointerEvent) {
@@ -56,7 +58,16 @@ export function LapSwimmer() {
               <i />
               <i />
               <i />
-              <span className="swim-seahorse" data-egg="swimmer" />
+              <span
+                className="swim-seahorse"
+                data-egg="swimmer"
+                title="A Las Trampas seahorse"
+                onClick={() => {
+                  const n = foundSeahorse("swimmer");
+                  setFound(n ? `Seahorse found: ${n} of ${SEAHORSE_SPOTS.length}` : "You found a seahorse!");
+                  window.setTimeout(() => setFound(null), 2400);
+                }}
+              />
             </span>
             {splash ? (
               <span className="swim-splash" key={splash}>
@@ -70,6 +81,11 @@ export function LapSwimmer() {
           </div>
         </div>
       </div>
+      {found ? (
+        <span className="seahorse-msg swim-found" role="status">
+          {found}
+        </span>
+      ) : null}
     </div>
   );
 }

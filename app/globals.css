@@ -364,10 +364,19 @@ body { padding-bottom: 26px; }
 .swim-bubbles i:nth-child(3) { left: -3px; animation-delay: -1.6s; }
 @keyframes swim-bubble { 0% { transform: translateY(4px); opacity: 0; } 25% { opacity: 1; } 100% { transform: translate(-8px, -14px); opacity: 0; } }
 /* Hidden seahorse #2: every so often a seahorse bubble drifts up from the swimmer's trail. */
-.swim-seahorse { position: absolute; left: -2px; bottom: 0; width: 7px; height: 10px; background: var(--color-pool);
+.swim-seahorse { position: absolute; left: -3px; bottom: 0; width: 9px; height: 13px; background: var(--color-pool);
   -webkit-mask: url(/brand/seahorse-silhouette.png) center/contain no-repeat; mask: url(/brand/seahorse-silhouette.png) center/contain no-repeat;
-  opacity: 0; animation: swim-seahorse 23s ease-out infinite 6s; }
-@keyframes swim-seahorse { 0%, 88% { transform: translate(0, 4px); opacity: 0; } 91% { opacity: 0.55; } 100% { transform: translate(-14px, -16px) rotate(-12deg); opacity: 0; } }
+  opacity: 0; visibility: hidden; cursor: pointer; animation: swim-seahorse 30s ease-out infinite 6s; }
+/* Only this element takes taps, and only while it is visible (visibility hidden = no pointer events). */
+.swim-lane .swim-seahorse { pointer-events: auto; }
+@keyframes swim-seahorse {
+  0%, 80% { transform: translate(0, 4px); opacity: 0; visibility: hidden; }
+  81% { visibility: visible; }
+  84% { opacity: 0.6; }
+  96% { opacity: 0.5; }
+  100% { transform: translate(-16px, -12px) rotate(-12deg); opacity: 0; visibility: visible; }
+}
+.swim-lane .swim-found { position: fixed; left: 50%; bottom: 32px; top: auto; transform: translateX(-50%); }
 .swim-splash { position: absolute; left: 30px; top: 6px; }
 .swim-splash i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; border: 1px solid rgba(14,124,184,0.6); animation: swim-splash 0.9s ease-out forwards; }
 .swim-splash i:nth-child(1) { --dx: -10px; --dy: -14px; }
