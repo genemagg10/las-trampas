@@ -118,13 +118,15 @@ begin
   if n <> 1 then raise exception 'Ada should see only her household, saw %', n; end if;
 end $$;
 
-update public.lap_settings set max_per_week = 1 where season = 2027;
-
--- Settings update is not granted to Ada (no lap scope). Do it as superuser.
+-- Phelps caps live in club_settings.lap_policy and stay off until the board turns them on.
+-- Ada cannot edit club settings. Turn the caps on as superuser: 3 days a week, 60 minutes a day.
 reset role;
-update public.lap_settings set max_per_week = 1 where season = 2027;
+update public.club_settings
+set value = jsonb_set(value, '{caps_enabled}', 'true'::jsonb)
+where key = 'lap_policy';
 set role authenticated;
 
+-- Slot 1 is 60 minutes, which is allowed. A second hour the same day is not.
 insert into public.lap_bookings (slot_id, person_id)
 select 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1'::uuid, id
 from public.people where user_id = '11111111-1111-1111-1111-111111111111';
@@ -134,9 +136,9 @@ begin
   insert into public.lap_bookings (slot_id, person_id)
   select 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2'::uuid, id
   from public.people where user_id = '11111111-1111-1111-1111-111111111111';
-  raise exception 'weekly limit did not fire';
+  raise exception 'daily minute cap did not fire';
 exception when others then
-  if sqlerrm not like '%weekly booking limit%' then
+  if sqlerrm not like '%The limit is 60 minutes a day.%' then
     raise;
   end if;
 end $$;
@@ -165,8 +167,71 @@ exception when others then
   end if;
 end $$;
 
+-- Four later days in one week, each a full hour. The fourth distinct day is over the cap.
+-- Skip the week that already holds slot 1, and open the advance window far enough to reach them.
 reset role;
-update public.lap_settings set max_per_week = 3 where season = 2027;
+update public.lap_settings set max_advance_days = 21 where season = 2027;
+
+insert into public.lap_slots (id, season, lane_id, starts_at, ends_at, capacity)
+select
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa' || (4 + n))::uuid,
+  2027,
+  l.id,
+  ((v.monday + (n - 1))::timestamp + time '07:00') at time zone 'America/Los_Angeles',
+  ((v.monday + (n - 1))::timestamp + time '08:00') at time zone 'America/Los_Angeles',
+  2
+from public.lanes l
+cross join generate_series(1, 4) as n
+cross join lateral (
+  select case
+    when date_trunc('week', current_date)::date + 7 <= current_date + 2
+      then date_trunc('week', current_date)::date + 14
+    else date_trunc('week', current_date)::date + 7
+  end as monday
+) v
+where l.number = 4;
+
+set role authenticated;
+
+do $$
+declare n int;
+begin
+  insert into public.lap_bookings (slot_id, person_id)
+  select 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5'::uuid, id
+  from public.people where user_id = '11111111-1111-1111-1111-111111111111';
+  insert into public.lap_bookings (slot_id, person_id)
+  select 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6'::uuid, id
+  from public.people where user_id = '11111111-1111-1111-1111-111111111111';
+  insert into public.lap_bookings (slot_id, person_id)
+  select 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7'::uuid, id
+  from public.people where user_id = '11111111-1111-1111-1111-111111111111';
+  select count(*) into n from public.lap_bookings
+  where person_id = private.current_person_id()
+    and status = 'booked'
+    and slot_id in (
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5'::uuid,
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6'::uuid,
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7'::uuid
+    );
+  if n <> 3 then
+    raise exception 'expected 3 day bookings before the cap, saw %', n;
+  end if;
+end $$;
+
+do $$
+begin
+  insert into public.lap_bookings (slot_id, person_id)
+  select 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8'::uuid, id
+  from public.people where user_id = '11111111-1111-1111-1111-111111111111';
+  raise exception 'day cap did not fire';
+exception when others then
+  if sqlerrm not like '%The limit is 3 days a week.%' then
+    raise;
+  end if;
+end $$;
+
+reset role;
+update public.lap_settings set max_advance_days = 7 where season = 2027;
 update public.lap_slots set capacity = 1 where id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1';
 
 select set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', false);
@@ -207,14 +272,16 @@ exception when others then
   end if;
 end $$;
 
--- Cancellation cutoff.
+-- A cancel inside 12 hours is allowed and records a strike. Rebook so the gate checks still have this swim.
 select set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false);
 
 do $$
 declare v_id uuid;
 begin
   select id into v_id from public.lap_bookings
-  where person_id = private.current_person_id() and status = 'booked' limit 1;
+  where person_id = private.current_person_id()
+    and slot_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1'
+    and status = 'booked';
   update public.lap_slots set starts_at = now() + interval '1 hour', ends_at = now() + interval '2 hours'
   where id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1';
   -- Ada cannot move the slot (no lap scope). Superuser will, below.
@@ -230,15 +297,42 @@ where id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1';
 set role authenticated;
 
 do $$
+declare
+  v_strikes int;
+  v_status text;
 begin
   update public.lap_bookings
   set status = 'cancelled'
   where person_id = private.current_person_id()
+    and slot_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1'
+    and status = 'booked';
+  if not found then
+    raise exception 'late cancel did not update the booking';
+  end if;
+
+  select status into v_status
+  from public.lap_bookings
+  where person_id = private.current_person_id()
     and slot_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1';
-  raise exception 'late cancel was allowed';
-exception when others then
-  if sqlerrm not like '%cutoff%' and sqlerrm not like '%Cancellations%' then
-    raise;
+  if v_status is distinct from 'cancelled' then
+    raise exception 'late cancel left status %', v_status;
+  end if;
+
+  select count(*) into v_strikes
+  from public.lap_strikes
+  where person_id = private.current_person_id()
+    and reason = 'late_cancel'
+    and cleared_at is null;
+  if v_strikes < 1 then
+    raise exception 'late cancel did not record a strike';
+  end if;
+
+  update public.lap_bookings
+  set status = 'booked'
+  where person_id = private.current_person_id()
+    and slot_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1';
+  if not found then
+    raise exception 'could not rebook after the late cancel';
   end if;
 end $$;
 
