@@ -326,7 +326,9 @@ body { padding-bottom: 26px; }
   47%, 53% { transform: translateX(calc(100vw - 58px)); }
   97%, 100% { transform: translateX(6px); }
 }
-@keyframes swim-face { 0% { transform: scaleX(1); } 50% { transform: scaleX(-1); } }
+/* --arm-dir flips the stroke while the swimmer is mirrored, so the arm always turns counterclockwise on screen. */
+@property --arm-dir { syntax: "<number>"; inherits: true; initial-value: 1; }
+@keyframes swim-face { 0% { transform: scaleX(1); --arm-dir: 1; } 50% { transform: scaleX(-1); --arm-dir: -1; } }
 @keyframes swim-turn {
   0% { transform: translateY(3px) rotate(-180deg); opacity: 0.6; }
   3% { transform: translateY(0) rotate(-360deg); opacity: 1; }
@@ -346,10 +348,10 @@ body { padding-bottom: 26px; }
 .swim-arm-back { animation-delay: -0.55s; }
 @keyframes swim-stroke {
   0% { transform: rotate(0deg); opacity: 1; }
-  45% { transform: rotate(-170deg); opacity: 1; }
+  45% { transform: rotate(calc(var(--arm-dir, 1) * -170deg)); opacity: 1; }
   50% { opacity: 0; }
-  95% { transform: rotate(-360deg); opacity: 0; }
-  100% { transform: rotate(-360deg); opacity: 1; }
+  95% { transform: rotate(calc(var(--arm-dir, 1) * -360deg)); opacity: 0; }
+  100% { transform: rotate(calc(var(--arm-dir, 1) * -360deg)); opacity: 1; }
 }
 .swim-wake { fill: rgba(91,192,235,0.55); }
 .swim-water { fill: none; stroke: rgba(255,255,255,0.9); stroke-width: 0.8; stroke-linecap: round; stroke-dasharray: 5 4; animation: swim-ripple 0.9s linear infinite; }
