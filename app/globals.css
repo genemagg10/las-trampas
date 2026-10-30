@@ -346,10 +346,10 @@ body { padding-bottom: 26px; }
 .swim-arm-back { animation-delay: -0.55s; }
 @keyframes swim-stroke {
   0% { transform: rotate(0deg); opacity: 1; }
-  45% { transform: rotate(-170deg); opacity: 1; }
+  45% { transform: rotate(170deg); opacity: 1; }
   50% { opacity: 0; }
-  95% { transform: rotate(-360deg); opacity: 0; }
-  100% { transform: rotate(-360deg); opacity: 1; }
+  95% { transform: rotate(360deg); opacity: 0; }
+  100% { transform: rotate(360deg); opacity: 1; }
 }
 .swim-wake { fill: rgba(91,192,235,0.55); }
 .swim-water { fill: none; stroke: rgba(255,255,255,0.9); stroke-width: 0.8; stroke-linecap: round; stroke-dasharray: 5 4; animation: swim-ripple 0.9s linear infinite; }
